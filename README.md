@@ -28,5 +28,6 @@ pnpm install
 
 ## Documentation
 
+- [Hexagonal architecture](documentation/hexagonal-architecture.md)
 
 <!-- seed4j-needle-documentation -->
