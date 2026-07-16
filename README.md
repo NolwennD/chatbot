@@ -2,6 +2,12 @@
 
 ## Prerequisites
 
+### Java
+
+You need to have Java 25:
+
+- [JDK 25](https://openjdk.java.net/projects/jdk/25/)
+
 ### Node.js and NPM
 
 Before you can build this project, you must install and configure the following dependencies on your machine:
