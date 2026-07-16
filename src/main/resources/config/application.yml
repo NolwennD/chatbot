@@ -1,0 +1,8 @@
+logging:
+  level:
+    fr:
+      craft:
+        chatbot: INFO
+spring:
+  application:
+    name: chatbot
