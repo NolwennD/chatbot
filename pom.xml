@@ -45,6 +45,12 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-api</artifactId>
+      <version>${archunit-junit5.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <properties>
@@ -64,6 +70,7 @@
     <checkstyle.version>10.21.0</checkstyle.version>
     <jacoco.version>0.8.15</jacoco.version>
     <spring-boot.version>4.0.6</spring-boot.version>
+    <archunit-junit5.version>1.4.2</archunit-junit5.version>
   </properties>
 
   <build>
