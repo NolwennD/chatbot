@@ -44,5 +44,6 @@ pnpm install
 - [Assertions](documentation/assertions.md)
 - [Logs Spy](documentation/logs-spy.md)
 - [CORS configuration](documentation/cors-configuration.md)
+- [Cucumber](documentation/cucumber.md)
 
 <!-- seed4j-needle-documentation -->

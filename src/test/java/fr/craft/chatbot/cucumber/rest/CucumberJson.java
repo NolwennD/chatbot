@@ -1,0 +1,48 @@
+package fr.craft.chatbot.cucumber.rest;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+
+final class CucumberJson {
+
+  private static final ObjectMapper jsonMapper = jsonMapper();
+
+  private CucumberJson() {}
+
+  public static ObjectMapper jsonMapper() {
+    return JsonMapper.builder()
+      .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL).withContentInclusion(JsonInclude.Include.NON_NULL))
+      .disable(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY)
+      .build();
+  }
+
+  public static String pretty(String json) {
+    if (StringUtils.isBlank(json)) {
+      return json;
+    }
+
+    try {
+      return jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMapper.readValue(json, Object.class));
+    } catch (JacksonException _) {
+      return json;
+    }
+  }
+
+  public static String toCamelCase(String value) {
+    if (value == null) {
+      return null;
+    }
+
+    return Arrays.stream(value.split("\\.")).map(CucumberJson::camelCaseField).collect(Collectors.joining("."));
+  }
+
+  private static String camelCaseField(String value) {
+    return StringUtils.uncapitalize(Arrays.stream(value.split(" ")).map(StringUtils::capitalize).collect(Collectors.joining()));
+  }
+}
