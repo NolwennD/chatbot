@@ -29,6 +29,10 @@ pnpm install
 
 ## Start up
 
+```bash
+./mvnw
+```
+
 
 <!-- seed4j-needle-startupCommand -->
 
