@@ -24,6 +24,7 @@ pnpm install
 
 ## Local environment
 
+- [Local server](http://localhost:8080)
 
 <!-- seed4j-needle-localEnvironment -->
 
@@ -42,5 +43,6 @@ pnpm install
 - [Package types](documentation/package-types.md)
 - [Assertions](documentation/assertions.md)
 - [Logs Spy](documentation/logs-spy.md)
+- [CORS configuration](documentation/cors-configuration.md)
 
 <!-- seed4j-needle-documentation -->
