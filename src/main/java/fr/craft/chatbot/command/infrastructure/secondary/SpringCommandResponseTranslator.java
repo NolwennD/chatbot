@@ -22,14 +22,15 @@ class SpringCommandResponseTranslator implements CommandResponseTranslator {
   }
 
   @Override
-  public CommandResponse unknownCommand(CommandOutcome.UnknownCommand knownCommands) {
-    String names = knownCommands.values().stream().map(CommandName::value).collect(Collectors.joining(", "));
+  public CommandResponse translate(CommandOutcome outcome) {
+    return switch (outcome) {
+      case CommandOutcome.CommandFound(CommandResponse response) -> response;
+      case CommandOutcome.NoCommandsAvailable _ -> new CommandResponse(messageSource.getMessage("command.none", null, locale));
+      case CommandOutcome.UnknownCommand unknownCommand -> {
+        String names = unknownCommand.values().stream().map(CommandName::value).collect(Collectors.joining(", "));
 
-    return new CommandResponse(messageSource.getMessage("command.unknown", new Object[] { names }, locale));
-  }
-
-  @Override
-  public CommandResponse noCommandsAvailable() {
-    return new CommandResponse(messageSource.getMessage("command.none", null, locale));
+        yield new CommandResponse(messageSource.getMessage("command.unknown", new Object[] { names }, locale));
+      }
+    };
   }
 }

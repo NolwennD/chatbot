@@ -27,27 +27,31 @@ class SpringCommandResponseTranslatorTest {
   void shouldListKnownCommandsWhenTheCommandIsUnknown() {
     var knownCommands = List.of(new CommandName("!projet"), new CommandName("!discord"));
 
-    assertThat(translator.unknownCommand(new CommandOutcome.UnknownCommand(knownCommands))).isEqualTo(
+    assertThat(translator.translate(new CommandOutcome.UnknownCommand(knownCommands))).isEqualTo(
       new CommandResponse("Commande inconnue. Commandes disponibles : !projet, !discord")
     );
   }
 
   @Test
   void shouldSayThereAreNoCommandsWhenNoneExist() {
-    assertThat(translator.noCommandsAvailable()).isEqualTo(new CommandResponse("Aucune commande n'est disponible pour le moment."));
+    assertThat(translator.translate(new CommandOutcome.NoCommandsAvailable())).isEqualTo(
+      new CommandResponse("Aucune commande n'est disponible pour le moment.")
+    );
   }
 
   @Test
   void shouldListKnownCommandsInEnglishWhenTheCommandIsUnknown() {
     var knownCommands = List.of(new CommandName("!projet"), new CommandName("!discord"));
 
-    assertThat(englishTranslator.unknownCommand(new CommandOutcome.UnknownCommand(knownCommands))).isEqualTo(
+    assertThat(englishTranslator.translate(new CommandOutcome.UnknownCommand(knownCommands))).isEqualTo(
       new CommandResponse("Unknown command. Available commands: !projet, !discord")
     );
   }
 
   @Test
   void shouldSayThereAreNoCommandsInEnglishWhenNoneExist() {
-    assertThat(englishTranslator.noCommandsAvailable()).isEqualTo(new CommandResponse("No commands are available at the moment."));
+    assertThat(englishTranslator.translate(new CommandOutcome.NoCommandsAvailable())).isEqualTo(
+      new CommandResponse("No commands are available at the moment.")
+    );
   }
 }

@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -53,6 +54,22 @@ class TwitchChatCommandIT {
     twitchChatFacade.receiveMessage(new ChatMessage("hello there"));
 
     assertThat(REPLY_FILE).doesNotExist();
+  }
+
+  @Nested
+  @IntegrationTest(properties = "chatbot.commands.file=src/test/resources/command/empty-commands.txt")
+  @Import(TwitchChatCommandIT.RecordingFacadeConfiguration.class)
+  class NoCommandsAvailable {
+
+    @Autowired
+    private RecordingTwitchChatFacade twitchChatFacade;
+
+    @Test
+    void shouldSayThereAreNoCommandsWhenNoneAreConfigured() {
+      twitchChatFacade.receiveMessage(new ChatMessage("!anything"));
+
+      assertThat(REPLY_FILE).hasContent("Aucune commande n'est disponible pour le moment.");
+    }
   }
 
   static class RecordingTwitchChatFacade implements TwitchChatFacade {

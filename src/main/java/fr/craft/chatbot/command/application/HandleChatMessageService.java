@@ -28,7 +28,7 @@ public class HandleChatMessageService {
   public void handle(ChatMessage message) {
     CommandName.fromChatMessageContent(message.content())
       .map(this::resolveOutcome)
-      .map(outcome -> outcome.response(translator))
+      .map(translator::translate)
       .ifPresent(response -> chatMessagePublisher.send(response.value()));
   }
 
