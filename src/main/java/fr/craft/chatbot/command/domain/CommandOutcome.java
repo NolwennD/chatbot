@@ -7,5 +7,7 @@ public sealed interface CommandOutcome {
 
   record UnknownCommand(List<CommandName> values) implements CommandOutcome {}
 
+  record CommandsListed(List<CommandName> values) implements CommandOutcome {}
+
   record NoCommandsAvailable() implements CommandOutcome {}
 }

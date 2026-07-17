@@ -4,6 +4,7 @@ import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandOutcome;
 import fr.craft.chatbot.command.domain.CommandResponse;
 import fr.craft.chatbot.command.domain.CommandResponseTranslator;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,9 @@ class SpringCommandResponseTranslator implements CommandResponseTranslator {
     return switch (outcome) {
       case CommandOutcome.CommandFound(CommandResponse response) -> response;
       case CommandOutcome.NoCommandsAvailable _ -> new CommandResponse(messageSource.getMessage("command.none", null, locale));
+      case CommandOutcome.CommandsListed(List<CommandName> names) -> new CommandResponse(
+        names.stream().map(CommandName::value).collect(Collectors.joining(", "))
+      );
       case CommandOutcome.UnknownCommand unknownCommand -> {
         String names = unknownCommand.values().stream().map(CommandName::value).collect(Collectors.joining(", "));
 

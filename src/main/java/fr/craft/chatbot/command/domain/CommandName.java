@@ -4,6 +4,8 @@ import fr.craft.chatbot.shared.error.domain.Assert;
 import java.util.Optional;
 
 public record CommandName(String value) {
+  public static final CommandName LIST_COMMANDS = new CommandName("!commands");
+
   private static final String TRIGGER_PREFIX = "!";
 
   public CommandName {

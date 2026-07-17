@@ -6,6 +6,8 @@ import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandOutcome;
 import fr.craft.chatbot.command.domain.CommandRepository;
 import fr.craft.chatbot.command.domain.CommandResponseTranslator;
+import java.util.List;
+import java.util.function.Function;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,13 +35,19 @@ public class HandleChatMessageService {
   }
 
   private CommandOutcome resolveOutcome(CommandName name) {
+    if (CommandName.LIST_COMMANDS.equals(name)) {
+      return outcomeFromKnownCommands(CommandOutcome.CommandsListed::new);
+    }
+
     return commandRepository
       .find(name)
       .<CommandOutcome>map(CommandOutcome.CommandFound::new)
-      .orElseGet(() -> {
-        var knownCommands = commandRepository.findAll();
+      .orElseGet(() -> outcomeFromKnownCommands(CommandOutcome.UnknownCommand::new));
+  }
 
-        return knownCommands.isEmpty() ? new CommandOutcome.NoCommandsAvailable() : new CommandOutcome.UnknownCommand(knownCommands);
-      });
+  private CommandOutcome outcomeFromKnownCommands(Function<List<CommandName>, CommandOutcome> whenPresent) {
+    var knownCommands = commandRepository.findAll();
+
+    return knownCommands.isEmpty() ? new CommandOutcome.NoCommandsAvailable() : whenPresent.apply(knownCommands);
   }
 }

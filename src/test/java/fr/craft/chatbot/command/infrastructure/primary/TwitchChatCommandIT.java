@@ -50,6 +50,13 @@ class TwitchChatCommandIT {
   }
 
   @Test
+  void shouldListKnownCommandsWhenTheCommandsCommandIsReceived() {
+    twitchChatFacade.receiveMessage(new ChatMessage("!commands"));
+
+    assertThat(REPLY_FILE).hasContent("!discord, !projet");
+  }
+
+  @Test
   void shouldNotWriteAnOutputFileWhenTheMessageIsNotACommand() {
     twitchChatFacade.receiveMessage(new ChatMessage("hello there"));
 
