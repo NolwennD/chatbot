@@ -12,3 +12,4 @@ chatbot:
     oauth-token: oauth:test
   commands:
     file: commands.txt
+  locale: fr

@@ -51,6 +51,24 @@ export TWITCH_OAUTH_TOKEN=your_oauth_token
 ./mvnw
 ```
 
+### Language
+
+The bot's own messages (unknown command, no command available) are translated. The language is controlled by the
+`CHATBOT_LOCALE` environment variable and defaults to `fr`:
+
+```bash
+export CHATBOT_LOCALE=en
+./mvnw
+```
+
+Supported languages: `fr` (default) and `en`. Translations live in
+[messages.properties](src/main/resources/messages.properties) (default, French) and
+[messages_en.properties](src/main/resources/messages_en.properties). To add another language, add a
+`messages_<locale>.properties` file with the same keys next to those two.
+
+This only affects the bot's own messages — the responses configured in [commands.txt](commands.txt) are plain text
+and always sent as written, regardless of `CHATBOT_LOCALE`.
+
 ## Start up
 
 ```bash
