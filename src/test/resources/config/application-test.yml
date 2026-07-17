@@ -5,3 +5,10 @@ spring:
     banner-mode: 'off'
 server:
   port: 0
+chatbot:
+  twitch:
+    channel: test-channel
+    bot-username: test-bot
+    oauth-token: oauth:test
+  commands:
+    file: commands.txt

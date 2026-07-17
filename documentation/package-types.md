@@ -10,7 +10,6 @@ To mark a package, you have to add a `package-info.java` file at the package roo
 ```java
 @fr.craft.chatbot.SharedKernel
 package fr.craft.chatbot;
-
 ```
 
 or:
@@ -18,5 +17,4 @@ or:
 ```java
 @fr.craft.chatbot.BusinessContext
 package fr.craft.chatbot;
-
 ```

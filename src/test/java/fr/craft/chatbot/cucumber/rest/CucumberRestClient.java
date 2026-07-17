@@ -1,10 +1,10 @@
 package fr.craft.chatbot.cucumber.rest;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.web.servlet.client.RestTestClient;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class CucumberRestClient {
 
@@ -35,8 +35,7 @@ public class CucumberRestClient {
   }
 
   public void setupRestClient() {
-    this.restClient = this.restClient
-      .mutate()
+    this.restClient = this.restClient.mutate()
       .requestInterceptors(interceptors -> interceptors.add(saveLastResultInterceptor()))
       .build();
   }

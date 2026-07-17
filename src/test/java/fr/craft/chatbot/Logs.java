@@ -9,5 +9,4 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(LogsSpyExtension.class)
-public @interface Logs {
-}
+public @interface Logs {}

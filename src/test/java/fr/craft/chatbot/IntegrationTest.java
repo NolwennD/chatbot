@@ -1,5 +1,6 @@
 package fr.craft.chatbot;
 
+import fr.craft.chatbot.command.infrastructure.TwitchTestClientConfiguration;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @DisplayNameGeneration(ReplaceCamelCase.class)
-@SpringBootTest(classes = { ChatbotApp.class })
+@SpringBootTest(classes = { ChatbotApp.class, TwitchTestClientConfiguration.class })
 public @interface IntegrationTest {
   @AliasFor(annotation = SpringBootTest.class)
   String[] properties() default {};

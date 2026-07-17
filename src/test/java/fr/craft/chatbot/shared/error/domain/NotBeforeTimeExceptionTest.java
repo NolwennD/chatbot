@@ -2,9 +2,9 @@ package fr.craft.chatbot.shared.error.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import fr.craft.chatbot.UnitTest;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
-import fr.craft.chatbot.UnitTest;
 
 @UnitTest
 class NotBeforeTimeExceptionTest {

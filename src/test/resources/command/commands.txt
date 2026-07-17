@@ -1,0 +1,5 @@
+# comment lines are ignored
+
+!projet=Un chatbot Twitch qui répond aux commandes du chat
+!discord=Rejoins le Discord ici : https://discord.gg/exemple
+garbage line without a separator

@@ -1,0 +1,5 @@
+# Commandes du chatbot Twitch, une par ligne au format : !commande=réponse
+# Les lignes vides et celles commençant par # sont ignorées.
+# Ce fichier est relu à chaque commande : pas besoin de redémarrer l'application après une modification.
+
+!projet=Chatbot Twitch qui répond aux commandes du chat, en cours de développement !

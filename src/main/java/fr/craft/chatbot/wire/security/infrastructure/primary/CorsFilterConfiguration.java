@@ -24,8 +24,8 @@ class CorsFilterConfiguration {
   public CorsFilter corsFilter() {
     var source = new UrlBasedCorsConfigurationSource();
     if (
-      !CollectionUtils.isEmpty(corsConfiguration.getAllowedOrigins()) ||
-      !CollectionUtils.isEmpty(corsConfiguration.getAllowedOriginPatterns())
+      !CollectionUtils.isEmpty(corsConfiguration.getAllowedOrigins())
+      || !CollectionUtils.isEmpty(corsConfiguration.getAllowedOriginPatterns())
     ) {
       log.debug("Registering CORS filter");
       source.registerCorsConfiguration("/api/**", corsConfiguration);

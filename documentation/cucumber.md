@@ -17,10 +17,10 @@ You'll then have to define the glue code:
 ```java
 import static fr.craft.chatbot.cucumber.rest.CucumberRestAssertions.*;
 
+import fr.craft.chatbot.cucumber.rest.CucumberRestClient;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
-import fr.craft.chatbot.cucumber.rest.CucumberRestClient;
 
 public class SimpleSteps {
 
@@ -37,7 +37,6 @@ public class SimpleSteps {
     assertThatLastResponse().hasOkStatus().hasElement("$.name").withValue(name).and().hasElement("$.age").withValue(age);
   }
 }
-
 ```
 
 Use a `CucumberRestClient` to make your rest calls, so you'll have the `context` management: the stuff allowing easier assertions in the `Then` steps.
@@ -74,7 +73,6 @@ public void shouldGetResponseContent(Map<String, Object> response) {
 public void shouldGetResponseContent(List<Map<String, Object>> responses) {
   assertThatLastResponse().hasElement("$.users").containingExactly(responses);
 }
-
 ```
 
 ## Reading responses content
@@ -110,10 +108,7 @@ You may need to mock beans for your component tests, but you won't be able to do
 ```java
 @ActiveProfiles("test")
 @CucumberContextConfiguration
-@SpringBootTest(
-  classes = { SampleApplicationApp.class, CucumberMocksConfiguration.class },
-  webEnvironment = WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = { SampleApplicationApp.class, CucumberMocksConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CucumberConfiguration {
 
   // other code omitted
@@ -128,7 +123,6 @@ public class CucumberConfiguration {
     }
   }
 }
-
 ```
 
 **Careful: the mock bean names (by default the method name) must be different from the real one or else they may just be ignored**

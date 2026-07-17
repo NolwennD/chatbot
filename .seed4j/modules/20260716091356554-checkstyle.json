@@ -1,14 +1,14 @@
 {
-  "module" : "checkstyle",
-  "date" : "2026-07-16T09:13:56.554389162Z",
-  "properties" : {
-    "packageName" : "fr.craft.chatbot",
-    "projectName" : "Chatbot",
-    "baseName" : "chatbot",
-    "nodePackageManager" : "pnpm",
-    "serverPort" : 8080,
-    "endOfLine" : "lf",
-    "indentSize" : 2,
-    "springConfigurationFormat" : "yaml"
+  "module": "checkstyle",
+  "date": "2026-07-16T09:13:56.554389162Z",
+  "properties": {
+    "packageName": "fr.craft.chatbot",
+    "projectName": "Chatbot",
+    "baseName": "chatbot",
+    "nodePackageManager": "pnpm",
+    "serverPort": 8080,
+    "endOfLine": "lf",
+    "indentSize": 2,
+    "springConfigurationFormat": "yaml"
   }
 }

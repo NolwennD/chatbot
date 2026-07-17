@@ -41,7 +41,10 @@ class HexagonalArchTest {
   private static final String[] commonToolsAndUtilsPackages = new String[] { "org.apache.commons..", "org.jmolecules..", "org.slf4j.." };
 
   private static String[] buildPackagesPatterns(Collection<String> packages) {
-    return packages.stream().map(path -> path + "..").toArray(String[]::new);
+    return packages
+      .stream()
+      .map(path -> path + "..")
+      .toArray(String[]::new);
   }
 
   private static Collection<String> packagesWithAnnotation(Class<? extends Annotation> annotationClass) throws AssertionError {
@@ -145,7 +148,11 @@ class HexagonalArchTest {
     }
 
     private String[] otherBusinessContextsDomains(String context) {
-      return businessContexts.stream().filter(other -> !context.equals(other)).map(name -> name + ".domain..").toArray(String[]::new);
+      return businessContexts
+        .stream()
+        .filter(other -> !context.equals(other))
+        .map(name -> name + ".domain..")
+        .toArray(String[]::new);
     }
   }
 

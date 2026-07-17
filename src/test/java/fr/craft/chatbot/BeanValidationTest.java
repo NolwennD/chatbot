@@ -76,12 +76,12 @@ class BeanValidationTest {
 
   private String errorMessage(Method method, Parameter parameter) {
     return (
-      "Missing @Validated annotation in " +
-      method.getDeclaringClass().getSimpleName() +
-      " on method " +
-      method.getName() +
-      " parameter of type " +
-      parameter.getType().getSimpleName()
+      "Missing @Validated annotation in "
+      + method.getDeclaringClass().getSimpleName()
+      + " on method "
+      + method.getName()
+      + " parameter of type "
+      + parameter.getType().getSimpleName()
     );
   }
 

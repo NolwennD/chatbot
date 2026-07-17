@@ -28,12 +28,34 @@ pnpm install
 
 <!-- seed4j-needle-localEnvironment -->
 
+## Twitch chatbot
+
+The application connects to a Twitch channel's chat and replies to commands (e.g. `!projet`). Commands and their
+responses are defined in [commands.txt](commands.txt), one per line, formatted as `!commande=réponse`. Lines that
+are blank or start with `#` are ignored. The file is re-read on every command, so you can add or edit commands
+while the application is running — no restart needed.
+
+### Credentials
+
+The bot needs a Twitch account and an OAuth token with chat scopes (`chat:read`, `chat:edit`). Generate one for
+that account using a tool such as the [Twitch Token Generator](https://twitchtokengenerator.com/) or the
+[Twitch CLI](https://dev.twitch.tv/docs/cli/), then strip the `oauth:` prefix if the tool includes it.
+
+These values are never stored in the repository — export them as environment variables before starting the
+application:
+
+```bash
+export TWITCH_CHANNEL=your_channel_name
+export TWITCH_BOT_USERNAME=your_bot_account_name
+export TWITCH_OAUTH_TOKEN=your_oauth_token
+./mvnw
+```
+
 ## Start up
 
 ```bash
 ./mvnw
 ```
-
 
 <!-- seed4j-needle-startupCommand -->
 

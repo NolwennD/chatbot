@@ -1,14 +1,14 @@
 {
-  "module" : "spring-boot-tomcat",
-  "date" : "2026-07-16T09:13:57.151152418Z",
-  "properties" : {
-    "packageName" : "fr.craft.chatbot",
-    "projectName" : "Chatbot",
-    "baseName" : "chatbot",
-    "nodePackageManager" : "pnpm",
-    "serverPort" : 8080,
-    "endOfLine" : "lf",
-    "indentSize" : 2,
-    "springConfigurationFormat" : "yaml"
+  "module": "spring-boot-tomcat",
+  "date": "2026-07-16T09:13:57.151152418Z",
+  "properties": {
+    "packageName": "fr.craft.chatbot",
+    "projectName": "Chatbot",
+    "baseName": "chatbot",
+    "nodePackageManager": "pnpm",
+    "serverPort": 8080,
+    "endOfLine": "lf",
+    "indentSize": 2,
+    "springConfigurationFormat": "yaml"
   }
 }

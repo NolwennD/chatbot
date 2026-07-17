@@ -2,11 +2,11 @@ package fr.craft.chatbot.wire.security.infrastructure.primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import fr.craft.chatbot.IntegrationTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.CorsFilter;
-import fr.craft.chatbot.IntegrationTest;
 
 @IntegrationTest
 class CorsFilterConfigurationIT {

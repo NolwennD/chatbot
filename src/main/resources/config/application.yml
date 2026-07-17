@@ -10,3 +10,10 @@ spring:
     default-property-inclusion: non_absent
 server:
   port: 8080
+chatbot:
+  twitch:
+    channel: ${TWITCH_CHANNEL}
+    bot-username: ${TWITCH_BOT_USERNAME}
+    oauth-token: ${TWITCH_OAUTH_TOKEN}
+  commands:
+    file: ${CHATBOT_COMMANDS_FILE:commands.txt}

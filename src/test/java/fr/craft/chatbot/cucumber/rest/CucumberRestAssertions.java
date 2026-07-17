@@ -40,11 +40,11 @@ public final class CucumberRestAssertions {
     assertThat(CucumberRestTestContext.getStatus())
       .as(
         () ->
-          "Expecting request to result in any of " +
-          Stream.of(statuses).map(HttpStatus::toString).collect(Collectors.joining(", ")) +
-          " but got " +
-          CucumberRestTestContext.getStatus() +
-          callContext()
+          "Expecting request to result in any of "
+          + Stream.of(statuses).map(HttpStatus::toString).collect(Collectors.joining(", "))
+          + " but got "
+          + CucumberRestTestContext.getStatus()
+          + callContext()
       )
       .isIn((Object[]) statuses);
   }
@@ -62,11 +62,11 @@ public final class CucumberRestAssertions {
     @Override
     public String value() {
       return (
-        " from " +
-        CucumberRestTestContext.getUri() +
-        " in " +
-        System.lineSeparator() +
-        CucumberRestTestContext.getResponse().map(CucumberJson::pretty).orElse("empty")
+        " from "
+        + CucumberRestTestContext.getUri()
+        + " in "
+        + System.lineSeparator()
+        + CucumberRestTestContext.getResponse().map(CucumberJson::pretty).orElse("empty")
       );
     }
   }
