@@ -69,3 +69,7 @@ export TWITCH_OAUTH_TOKEN=your_oauth_token
 - [Cucumber](documentation/cucumber.md)
 
 <!-- seed4j-needle-documentation -->
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
