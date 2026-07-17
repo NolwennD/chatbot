@@ -12,6 +12,7 @@ import fr.craft.chatbot.command.domain.ChatMessagePublisher;
 import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandRepository;
 import fr.craft.chatbot.command.domain.CommandResponse;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,10 +39,28 @@ class HandleChatMessageServiceTest {
   }
 
   @Test
-  void shouldStaySilentWhenTheCommandIsUnknown() {
+  void shouldListKnownCommandsWhenTheCommandIsUnknown() {
     when(commandRepository.find(eq(new CommandName("!doesnotexist")))).thenReturn(Optional.empty());
+    when(commandRepository.findAll()).thenReturn(List.of(new CommandName("!projet"), new CommandName("!discord")));
 
     new HandleChatMessageService(commandRepository, chatMessagePublisher).handle(new ChatMessage("!doesnotexist"));
+
+    verify(chatMessagePublisher).send("Commande inconnue. Commandes disponibles : !projet, !discord");
+  }
+
+  @Test
+  void shouldSayThereAreNoCommandsWhenNoneExist() {
+    when(commandRepository.find(eq(new CommandName("!doesnotexist")))).thenReturn(Optional.empty());
+    when(commandRepository.findAll()).thenReturn(List.of());
+
+    new HandleChatMessageService(commandRepository, chatMessagePublisher).handle(new ChatMessage("!doesnotexist"));
+
+    verify(chatMessagePublisher).send("Aucune commande n'est disponible pour le moment.");
+  }
+
+  @Test
+  void shouldStaySilentWhenTheMessageIsNotACommand() {
+    new HandleChatMessageService(commandRepository, chatMessagePublisher).handle(new ChatMessage("hello there"));
 
     verify(chatMessagePublisher, never()).send(anyString());
   }

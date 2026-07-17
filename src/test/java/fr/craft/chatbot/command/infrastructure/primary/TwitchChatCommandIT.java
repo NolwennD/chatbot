@@ -42,8 +42,15 @@ class TwitchChatCommandIT {
   }
 
   @Test
-  void shouldNotWriteAnOutputFileWhenTheCommandIsUnknown() {
+  void shouldListKnownCommandsWhenTheCommandIsUnknown() {
     twitchChatFacade.receiveMessage(new ChatMessage("!doesnotexist"));
+
+    assertThat(REPLY_FILE).hasContent("Commande inconnue. Commandes disponibles : !discord, !projet");
+  }
+
+  @Test
+  void shouldNotWriteAnOutputFileWhenTheMessageIsNotACommand() {
+    twitchChatFacade.receiveMessage(new ChatMessage("hello there"));
 
     assertThat(REPLY_FILE).doesNotExist();
   }

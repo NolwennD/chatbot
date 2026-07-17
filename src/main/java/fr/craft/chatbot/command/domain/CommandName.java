@@ -17,10 +17,8 @@ public record CommandName(String value) {
   public static Optional<CommandName> fromChatMessageContent(String content) {
     var firstWord = content.trim().split("\\s+", 2)[0];
 
-    if (!firstWord.startsWith(TRIGGER_PREFIX)) {
-      return Optional.empty();
-    }
-
-    return Optional.of(new CommandName(firstWord));
+    return Optional.of(firstWord)
+      .filter(w -> w.startsWith(TRIGGER_PREFIX))
+      .map(CommandName::new);
   }
 }

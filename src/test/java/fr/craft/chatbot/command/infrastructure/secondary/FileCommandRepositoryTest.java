@@ -6,8 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fr.craft.chatbot.UnitTest;
 import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandResponse;
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -42,6 +44,22 @@ class FileCommandRepositoryTest {
     var repository = new FileCommandRepository(directory.resolve("missing.txt").toString());
 
     assertThatThrownBy(() -> repository.find(new CommandName("!projet"))).isInstanceOf(UncheckedIOException.class);
+  }
+
+  @Test
+  void shouldListAllKnownCommandNames() throws URISyntaxException {
+    var repository = new FileCommandRepository(commandsResourceFile("command/commands.txt").toString());
+
+    assertThat(repository.findAll()).containsExactlyInAnyOrder(new CommandName("!projet"), new CommandName("!discord"));
+  }
+
+  @Test
+  void shouldReturnAnEmptyListWhenThereAreNoCommands() throws IOException {
+    var emptyFile = directory.resolve("commands.txt");
+    Files.writeString(emptyFile, "# no commands yet\n");
+    var repository = new FileCommandRepository(emptyFile.toString());
+
+    assertThat(repository.findAll()).isEmpty();
   }
 
   private Path commandsResourceFile(String name) throws URISyntaxException {

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +27,11 @@ class FileCommandRepository implements CommandRepository {
   @Override
   public Optional<CommandResponse> find(CommandName name) {
     return Optional.ofNullable(readCommands().get(name.value())).map(CommandResponse::new);
+  }
+
+  @Override
+  public List<CommandName> findAll() {
+    return readCommands().keySet().stream().map(CommandName::new).sorted(Comparator.comparing(CommandName::value)).toList();
   }
 
   private Map<String, String> readCommands() {

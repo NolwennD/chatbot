@@ -4,6 +4,7 @@ import fr.craft.chatbot.command.domain.ChatMessage;
 import fr.craft.chatbot.command.domain.ChatMessagePublisher;
 import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandRepository;
+import fr.craft.chatbot.command.domain.CommandResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,8 +19,10 @@ public class HandleChatMessageService {
   }
 
   public void handle(ChatMessage message) {
-    CommandName.fromChatMessageContent(message.content())
-      .flatMap(commandRepository::find)
-      .ifPresent(response -> chatMessagePublisher.send(response.value()));
+    CommandName.fromChatMessageContent(message.content()).ifPresent(name -> chatMessagePublisher.send(resolveResponse(name).value()));
+  }
+
+  private CommandResponse resolveResponse(CommandName name) {
+    return commandRepository.find(name).orElseGet(() -> CommandResponse.fromCommands(commandRepository.findAll()));
   }
 }
