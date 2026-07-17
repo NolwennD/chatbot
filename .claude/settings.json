@@ -1,4 +1,7 @@
 {
+  "enabledPlugins": {
+    "ponytail@ponytail": true
+  },
   "extraKnownMarketplaces": {
     "ponytail": {
       "source": {
@@ -6,9 +9,5 @@
         "repo": "DietrichGebert/ponytail"
       }
     }
-  },
-  "enabledPlugins": {
-    "ponytail@ponytail": true,
-    "superpowers@claude-plugins-official": true
   }
 }
