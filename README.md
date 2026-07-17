@@ -35,6 +35,18 @@ responses are defined in [commands.txt](commands.txt), one per line, formatted a
 are blank or start with `#` are ignored. The file is re-read on every command, so you can add or edit commands
 while the application is running — no restart needed.
 
+By default the application reads `commands.txt` in the current directory. To point it at a different file, set the
+`CHATBOT_COMMANDS_FILE` environment variable, or pass it as a command-line argument when starting the application:
+
+```bash
+export CHATBOT_COMMANDS_FILE=/path/to/commands.txt
+./mvnw
+```
+
+```bash
+./mvnw -Dspring-boot.run.arguments="--chatbot.commands.file=/path/to/commands.txt"
+```
+
 ### Credentials
 
 The bot needs a Twitch account and an OAuth token with chat scopes (`chat:read`, `chat:edit`). Generate one for
