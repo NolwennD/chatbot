@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fr.craft.chatbot.UnitTest;
 import fr.craft.chatbot.shared.error.domain.MissingMandatoryValueException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @UnitTest
 class CommandNameTest {
@@ -27,18 +30,16 @@ class CommandNameTest {
     assertThatThrownBy(() -> new CommandName("projet")).isInstanceOf(IllegalArgumentException.class);
   }
 
-  @Test
-  void shouldExtractTheCommandNameFromChatMessageContent() {
-    assertThat(CommandName.fromChatMessageContent("!projet")).contains(new CommandName("!projet"));
+  @ParameterizedTest
+  @ValueSource(strings = { "!projet", "!projet please", " !projet", "!projet ", "  !projet  " })
+  void shouldExtractTheCommandNameWhenContentIsACommand(String content) {
+    assertThat(CommandName.parse(content)).contains(new CommandName("!projet"));
   }
 
-  @Test
-  void shouldExtractTheCommandNameIgnoringExtraWords() {
-    assertThat(CommandName.fromChatMessageContent("!projet please")).contains(new CommandName("!projet"));
-  }
-
-  @Test
-  void shouldReturnEmptyWhenTheContentIsNotACommand() {
-    assertThat(CommandName.fromChatMessageContent("hello everyone")).isEmpty();
+  @ParameterizedTest
+  @NullSource
+  @ValueSource(strings = { "", "   ", "hello everyone" })
+  void shouldReturnEmptyWhenTheContentIsNotACommand(String content) {
+    assertThat(CommandName.parse(content)).isEmpty();
   }
 }

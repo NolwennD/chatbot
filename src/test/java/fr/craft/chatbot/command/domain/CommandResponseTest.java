@@ -12,13 +12,13 @@ class CommandResponseTest {
 
   @Test
   void shouldBuildACommandResponse() {
-    var response = new CommandResponse("Un chatbot Twitch");
+    var response = new CommandResponse(" Un chatbot Twitch ");
 
     assertThat(response.value()).isEqualTo("Un chatbot Twitch");
   }
 
   @Test
   void shouldRejectABlankValue() {
-    assertThatThrownBy(() -> new CommandResponse(" ")).isInstanceOf(MissingMandatoryValueException.class);
+    assertThatThrownBy(() -> new CommandResponse(null)).isInstanceOf(MissingMandatoryValueException.class);
   }
 }

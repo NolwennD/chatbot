@@ -3,12 +3,11 @@ package fr.craft.chatbot.command.infrastructure.secondary;
 import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandRepository;
 import fr.craft.chatbot.command.domain.CommandResponse;
+import fr.craft.chatbot.command.domain.Commands;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,26 +24,44 @@ class FileCommandRepository implements CommandRepository {
   }
 
   @Override
-  public Optional<CommandResponse> find(CommandName name) {
-    return Optional.ofNullable(readCommands().get(name.value())).map(CommandResponse::new);
+  public Commands findAll() {
+    return new Commands(readCommands());
   }
 
-  @Override
-  public List<CommandName> findAll() {
-    return readCommands().keySet().stream().map(CommandName::new).sorted(Comparator.comparing(CommandName::value)).toList();
-  }
-
-  private Map<String, String> readCommands() {
+  private Map<CommandName, CommandResponse> readCommands() {
     try {
       return Files.readAllLines(commandsFile)
         .stream()
-        .map(String::trim)
-        .filter(line -> !line.isEmpty() && !line.startsWith("#"))
-        .map(line -> line.split("=", 2))
-        .filter(parts -> parts.length == 2)
-        .collect(Collectors.toMap(parts -> parts[0].trim(), parts -> parts[1].trim()));
+        .map(RawLine::new)
+        .map(RawLine::parse)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toMap(CommandLine::name, CommandLine::value));
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
   }
+
+  private record RawLine(String line) {
+    private static final String COMMENT_PREFIX = "#";
+    private static final String NAME_VALUE_SEPARATOR = "=";
+    private static final int NAME_AND_VALUE = 2;
+
+    RawLine(String line) {
+      this.line = line.trim();
+    }
+
+    Optional<CommandLine> parse() {
+      if (line.isEmpty() || line.startsWith(COMMENT_PREFIX)) {
+        return Optional.empty();
+      }
+
+      var parts = line.split(NAME_VALUE_SEPARATOR, NAME_AND_VALUE);
+
+      return parts.length == NAME_AND_VALUE
+        ? CommandName.parse(parts[0]).map(name -> new CommandLine(name, new CommandResponse(parts[1])))
+        : Optional.empty();
+    }
+  }
+
+  private record CommandLine(CommandName name, CommandResponse value) {}
 }
