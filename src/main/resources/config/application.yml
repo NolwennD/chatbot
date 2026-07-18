@@ -17,4 +17,4 @@ chatbot:
     oauth-token: ${TWITCH_OAUTH_TOKEN}
   commands:
     file: ${CHATBOT_COMMANDS_FILE:commands.txt}
-  locale: ${CHATBOT_LOCALE:fr}
+  locale: ${CHATBOT_LOCALE:}

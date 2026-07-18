@@ -17,9 +17,9 @@ class SpringCommandResponseTranslator implements CommandResponseTranslator {
   private final MessageSource messageSource;
   private final Locale locale;
 
-  SpringCommandResponseTranslator(MessageSource messageSource, @Value("${chatbot.locale}") String locale) {
+  SpringCommandResponseTranslator(MessageSource messageSource, @Value("${chatbot.locale:}") String locale) {
     this.messageSource = messageSource;
-    this.locale = Locale.forLanguageTag(locale);
+    this.locale = SupportedLocale.resolve(locale, Locale.getDefault()).value();
   }
 
   @Override
