@@ -97,3 +97,9 @@ Everything above runs on the **base jdtls — no extension needed**. Loading the
 ## Test conventions
 
 Tag every test with a category annotation (drives `@DisplayNameGeneration` and Spring wiring): `@UnitTest`, `@ComponentTest`, or `@IntegrationTest`. `@IntegrationTest` boots the full context with the `test` profile and a `TwitchTestClientConfiguration` so no real Twitch connection is made. Integration test classes must be named `*IT`; Cucumber suites `*CucumberTest`. `.feature` files go in `src/test/features/` (see [documentation/cucumber.md](documentation/cucumber.md)). Beyond `HexagonalArchTest`, other ArchUnit suites enforce annotation usage and `equals`/`hashCode` conventions.
+
+## Continuous Integration
+
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs `pnpm prettier:check` and `./mvnw verify` on every PR and on push to `main`. [renovate.json](renovate.json) (extends `config:recommended`) keeps dependencies current automatically, including this workflow's own pinned action versions — its `github-actions` manager is enabled by default.
+
+When pinning a new GitHub Action version (`uses: owner/repo@vN`) or any other fast-moving external tool, verify the actual current major on its real releases page (e.g. via web search/fetch) instead of guessing from memory — these move faster than a model's training data tracks, and getting it wrong at authoring time is exactly the kind of drift Renovate can't fix retroactively before the first PR merges.
