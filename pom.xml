@@ -147,6 +147,7 @@
     <thymeleaf-layout-dialect.version>4.0.1</thymeleaf-layout-dialect.version>
     <reflections.version>0.10.2</reflections.version>
     <cucumber.version>7.34.4</cucumber.version>
+    <modernizer-maven-plugin.version>3.4.0</modernizer-maven-plugin.version>
   </properties>
 
   <build>
@@ -308,6 +309,24 @@
             <mainClass>fr.craft.chatbot.ChatbotApp</mainClass>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.gaul</groupId>
+          <artifactId>modernizer-maven-plugin</artifactId>
+          <version>${modernizer-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>modernizer</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>modernizer</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <javaVersion>${java.version}</javaVersion>
+            <failOnViolations>true</failOnViolations>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -412,6 +431,10 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.gaul</groupId>
+        <artifactId>modernizer-maven-plugin</artifactId>
       </plugin>
     </plugins>
     <defaultGoal>spring-boot:run</defaultGoal>

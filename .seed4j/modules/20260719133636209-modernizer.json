@@ -1,0 +1,14 @@
+{
+  "module": "modernizer",
+  "date": "2026-07-19T13:36:36.209500173Z",
+  "properties": {
+    "endOfLine": "lf",
+    "springConfigurationFormat": "yaml",
+    "packageName": "fr.craft.chatbot",
+    "projectName": "Chatbot",
+    "nodePackageManager": "pnpm",
+    "serverPort": 8080,
+    "indentSize": 2,
+    "baseName": "chatbot"
+  }
+}
