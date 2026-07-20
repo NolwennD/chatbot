@@ -1,4 +1,4 @@
-package fr.craft.chatbot.command.infrastructure.secondary;
+package fr.craft.chatbot.shared.twitch.infrastructure.secondary;
 
 import fr.craft.chatbot.shared.twitch.domain.ChatMessagePublisher;
 import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
