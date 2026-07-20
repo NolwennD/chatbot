@@ -37,10 +37,10 @@ public class HandleSearchMessageService {
   }
 
   private SearchOutcome resolveOutcome(SearchQuery query) {
-    var outcome = SearchOutcome.from(query, pageLookup.findSummary(query, botLocale));
+    var outcome = SearchOutcome.from(query, botLocale, pageLookup.findSummary(query, botLocale));
 
-    if (outcome instanceof SearchOutcome.NotFound && !botLocale.equals(Locale.ENGLISH)) {
-      return SearchOutcome.from(query, pageLookup.findSummary(query, Locale.ENGLISH));
+    if (outcome instanceof SearchOutcome.NotFound notFound && !notFound.isEnglish()) {
+      return SearchOutcome.from(query, Locale.ENGLISH, pageLookup.findSummary(query, Locale.ENGLISH));
     }
 
     return outcome;

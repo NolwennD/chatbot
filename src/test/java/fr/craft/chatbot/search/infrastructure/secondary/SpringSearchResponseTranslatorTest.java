@@ -45,14 +45,14 @@ class SpringSearchResponseTranslatorTest {
 
   @Test
   void shouldSayNoArticleWasFoundWhenNotFound() {
-    assertThat(translator.translate(new SearchOutcome.NotFound(new SearchQuery("doesnotexist")))).containsExactly(
+    assertThat(translator.translate(new SearchOutcome.NotFound(new SearchQuery("doesnotexist"), Locale.FRENCH))).containsExactly(
       new SearchResponse("Aucun article trouvé pour \"doesnotexist\".")
     );
   }
 
   @Test
   void shouldSayNoArticleWasFoundInEnglishWhenNotFound() {
-    assertThat(englishTranslator.translate(new SearchOutcome.NotFound(new SearchQuery("doesnotexist")))).containsExactly(
+    assertThat(englishTranslator.translate(new SearchOutcome.NotFound(new SearchQuery("doesnotexist"), Locale.ENGLISH))).containsExactly(
       new SearchResponse("No article found for \"doesnotexist\".")
     );
   }

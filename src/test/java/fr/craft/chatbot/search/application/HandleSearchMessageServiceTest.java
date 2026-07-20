@@ -77,7 +77,9 @@ class HandleSearchMessageServiceTest {
   @Test
   void shouldNotFallBackToEnglishWhenTheBotLocaleIsAlreadyEnglish() {
     when(pageLookup.findSummary(QUERY, Locale.ENGLISH)).thenReturn(Optional.empty());
-    when(translator.translate(new SearchOutcome.NotFound(QUERY))).thenReturn(List.of(new SearchResponse("No article found.")));
+    when(translator.translate(new SearchOutcome.NotFound(QUERY, Locale.ENGLISH))).thenReturn(
+      List.of(new SearchResponse("No article found."))
+    );
 
     new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.ENGLISH).handle(new ChatMessage("?wp java"));
 
@@ -102,7 +104,9 @@ class HandleSearchMessageServiceTest {
   void shouldSendTheNotFoundResponseWhenNothingIsFoundInEitherLocale() {
     when(pageLookup.findSummary(QUERY, Locale.FRENCH)).thenReturn(Optional.empty());
     when(pageLookup.findSummary(QUERY, Locale.ENGLISH)).thenReturn(Optional.empty());
-    when(translator.translate(new SearchOutcome.NotFound(QUERY))).thenReturn(List.of(new SearchResponse("Aucun article trouvé.")));
+    when(translator.translate(new SearchOutcome.NotFound(QUERY, Locale.ENGLISH))).thenReturn(
+      List.of(new SearchResponse("Aucun article trouvé."))
+    );
 
     new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.FRENCH).handle(new ChatMessage("?wp java"));
 

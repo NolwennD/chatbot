@@ -28,7 +28,7 @@ class SpringSearchResponseTranslator implements SearchResponseTranslator {
       case SearchOutcome.Ambiguous(SearchQuery query, PageSummary summary) -> List.of(
         new SearchResponse(messageSource.getMessage("search.ambiguous", new Object[] { query.value(), summary.url() }, locale))
       );
-      case SearchOutcome.NotFound(SearchQuery query) -> List.of(
+      case SearchOutcome.NotFound(SearchQuery query, Locale _) -> List.of(
         new SearchResponse(messageSource.getMessage("search.notfound", new Object[] { query.value() }, locale))
       );
     };
