@@ -1,6 +1,9 @@
 package fr.craft.chatbot.shared.error.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.time.Instant;
+import org.jspecify.annotations.Nullable;
 
 public final class NotBeforeTimeException extends AssertionException {
 
@@ -26,9 +29,9 @@ public final class NotBeforeTimeException extends AssertionException {
   {
 
     private final String hint;
-    private Instant value;
-    private String field;
-    private Instant other;
+    private @Nullable Instant value;
+    private @Nullable String field;
+    private @Nullable Instant other;
 
     private NotBeforeTimeExceptionBuilder(String hint) {
       this.hint = hint;
@@ -56,7 +59,7 @@ public final class NotBeforeTimeException extends AssertionException {
     }
 
     private NotBeforeTimeException build() {
-      return new NotBeforeTimeException(field, message());
+      return new NotBeforeTimeException(requireNonNull(field), message());
     }
 
     private String message() {

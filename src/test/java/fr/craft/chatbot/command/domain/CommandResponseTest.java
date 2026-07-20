@@ -18,6 +18,7 @@ class CommandResponseTest {
   }
 
   @Test
+  @SuppressWarnings("NullAway")
   void shouldRejectABlankValue() {
     assertThatThrownBy(() -> new CommandResponse(null)).isInstanceOf(MissingMandatoryValueException.class);
   }

@@ -1,6 +1,9 @@
 package fr.craft.chatbot.shared.error.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 public final class StringTooLongException extends AssertionException {
 
@@ -8,7 +11,8 @@ public final class StringTooLongException extends AssertionException {
   private final String currentLength;
 
   private StringTooLongException(StringTooLongExceptionBuilder builder) {
-    super(builder.field, builder.message());
+    super(requireNonNull(builder.field), message(builder));
+    Assert.notNull("value", builder.value);
     maxLength = String.valueOf(builder.maxLength);
     currentLength = String.valueOf(builder.value.length());
   }
@@ -19,9 +23,9 @@ public final class StringTooLongException extends AssertionException {
 
   static final class StringTooLongExceptionBuilder {
 
-    private String value;
+    private @Nullable String value;
     private int maxLength;
-    private String field;
+    private @Nullable String field;
 
     private StringTooLongExceptionBuilder() {}
 
@@ -43,13 +47,20 @@ public final class StringTooLongException extends AssertionException {
       return this;
     }
 
-    private String message() {
-      return "The value \"%s\" in field \"%s\" must be at most %d long but was %d".formatted(value, field, maxLength, value.length());
-    }
-
     public StringTooLongException build() {
       return new StringTooLongException(this);
     }
+  }
+
+  private static String message(StringTooLongExceptionBuilder builder) {
+    Assert.notNull("value", builder.value);
+
+    return "The value \"%s\" in field \"%s\" must be at most %d long but was %d".formatted(
+      builder.value,
+      builder.field,
+      builder.maxLength,
+      builder.value.length()
+    );
   }
 
   @Override

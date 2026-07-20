@@ -79,6 +79,7 @@ class TwitchChatCommandIT {
     }
   }
 
+  @SuppressWarnings("NullAway.Init")
   static class RecordingTwitchChatFacade implements TwitchChatFacade {
 
     private Consumer<ChatMessage> listener;

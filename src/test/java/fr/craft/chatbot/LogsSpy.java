@@ -6,6 +6,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import fr.craft.chatbot.shared.nullness.domain.Initializer;
 import java.util.List;
 import java.util.function.Predicate;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public final class LogsSpy {
   private ListAppender<ILoggingEvent> appender;
   private Level initialLevel;
 
+  @Initializer
   void prepare() {
     appender = new ListAppender<>();
     logger = (Logger) LoggerFactory.getLogger("fr.craft.chatbot");

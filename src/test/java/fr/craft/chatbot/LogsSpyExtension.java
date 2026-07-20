@@ -4,6 +4,7 @@ import static org.junit.platform.commons.util.AnnotationUtils.*;
 
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -54,7 +55,7 @@ public final class LogsSpyExtension
     injectFields(testClass, testInstance, ModifierSupport::isNotStatic);
   }
 
-  private void injectFields(Class<?> testClass, Object testInstance, Predicate<Field> predicate) {
+  private void injectFields(Class<?> testClass, @Nullable Object testInstance, Predicate<Field> predicate) {
     predicate = predicate.and(field -> LogsSpy.class.isAssignableFrom(field.getType()));
     findAnnotatedFields(testClass, Logs.class, predicate).forEach(field -> {
       try {

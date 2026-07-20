@@ -47,6 +47,10 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.github.twitch4j</groupId>
       <artifactId>twitch4j-chat</artifactId>
       <version>${twitch4j.version}</version>
@@ -129,6 +133,8 @@
     <reflections.version>0.10.2</reflections.version>
     <cucumber.version>7.34.4</cucumber.version>
     <modernizer-maven-plugin.version>3.4.0</modernizer-maven-plugin.version>
+    <error-prone.version>2.50.0</error-prone.version>
+    <nullaway.version>0.13.7</nullaway.version>
   </properties>
 
   <build>
@@ -317,6 +323,33 @@
         <configuration>
           <release>${java.version}</release>
           <parameters>true</parameters>
+          <compilerArgs>
+            <arg>-XDcompilePolicy=simple</arg>
+            <arg>--should-stop=ifError=FLOW</arg>
+            <arg>
+              -Xplugin:ErrorProne
+              -Xep:BadImport:OFF
+              -Xep:UnnecessaryLambda:OFF
+              -Xep:UnnecessaryStringBuilder:OFF
+              -Xep:ImmutableEnumChecker:OFF
+              -Xep:NullAway:ERROR
+              -XepOpt:NullAway:JSpecifyMode=true
+              -XepOpt:NullAway:OnlyNullMarked=true
+              -XepOpt:NullAway:CustomContractAnnotations=fr.craft.chatbot.shared.nullness.domain.Contract
+            </arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_core</artifactId>
+              <version>${error-prone.version}</version>
+            </path>
+            <path>
+              <groupId>com.uber.nullaway</groupId>
+              <artifactId>nullaway</artifactId>
+              <version>${nullaway.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>

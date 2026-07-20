@@ -1,6 +1,9 @@
 package fr.craft.chatbot.shared.error.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 public class TooManyElementsException extends AssertionException {
 
@@ -8,7 +11,7 @@ public class TooManyElementsException extends AssertionException {
   private final String currentSize;
 
   public TooManyElementsException(TooManyElementsExceptionBuilder builder) {
-    super(builder.field, builder.message());
+    super(requireNonNull(builder.field), builder.message());
     maxSize = String.valueOf(builder.maxSize);
     currentSize = String.valueOf(builder.size);
   }
@@ -19,7 +22,7 @@ public class TooManyElementsException extends AssertionException {
 
   public static class TooManyElementsExceptionBuilder {
 
-    private String field;
+    private @Nullable String field;
     private int maxSize;
     private int size;
 

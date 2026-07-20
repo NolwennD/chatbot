@@ -38,7 +38,12 @@ class HexagonalArchTest {
 
   // the empty package is related to: https://github.com/TNG/ArchUnit/issues/191#issuecomment-507964792
   private static final String[] vanillaPackages = new String[] { "java..", "" };
-  private static final String[] commonToolsAndUtilsPackages = new String[] { "org.apache.commons..", "org.jmolecules..", "org.slf4j.." };
+  private static final String[] commonToolsAndUtilsPackages = new String[] {
+    "org.apache.commons..",
+    "org.jmolecules..",
+    "org.slf4j..",
+    "org.jspecify..",
+  };
 
   private static String[] buildPackagesPatterns(Collection<String> packages) {
     return packages
@@ -255,7 +260,9 @@ class HexagonalArchTest {
         .that()
         .haveSimpleName("package-info")
         .and()
-        .resideInAPackage(SHARED_PACKAGES)
+        .resideInAPackage(ROOT_PACKAGE.concat(".shared.."))
+        .and()
+        .resideOutsideOfPackages(ROOT_PACKAGE.concat(".shared..domain"), ROOT_PACKAGE.concat(".shared..infrastructure.*"))
         .should()
         .beMetaAnnotatedWith(SharedKernel.class)
         .because(ROOT_PACKAGE + ".shared package should only contain shared kernels")

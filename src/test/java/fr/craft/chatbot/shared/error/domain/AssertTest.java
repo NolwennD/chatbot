@@ -16,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @UnitTest
+@SuppressWarnings("NullAway")
 class AssertTest {
 
   private static final String FIELD_NAME = "fieldName";

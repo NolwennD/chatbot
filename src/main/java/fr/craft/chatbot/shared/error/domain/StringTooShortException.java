@@ -1,6 +1,9 @@
 package fr.craft.chatbot.shared.error.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 public final class StringTooShortException extends AssertionException {
 
@@ -8,7 +11,8 @@ public final class StringTooShortException extends AssertionException {
   private final String currentLength;
 
   private StringTooShortException(StringTooShortExceptionBuilder builder) {
-    super(builder.field, builder.message());
+    super(requireNonNull(builder.field), message(builder));
+    Assert.notNull("value", builder.value);
     minLength = String.valueOf(builder.minLength);
     currentLength = String.valueOf(builder.value.length());
   }
@@ -19,9 +23,9 @@ public final class StringTooShortException extends AssertionException {
 
   static final class StringTooShortExceptionBuilder {
 
-    private String value;
+    private @Nullable String value;
     private int minLength;
-    private String field;
+    private @Nullable String field;
 
     private StringTooShortExceptionBuilder() {}
 
@@ -43,13 +47,20 @@ public final class StringTooShortException extends AssertionException {
       return this;
     }
 
-    private String message() {
-      return "The value \"%s\" in field \"%s\" must be at least %d long but was only %d".formatted(value, field, minLength, value.length());
-    }
-
     public StringTooShortException build() {
       return new StringTooShortException(this);
     }
+  }
+
+  private static String message(StringTooShortExceptionBuilder builder) {
+    Assert.notNull("value", builder.value);
+
+    return "The value \"%s\" in field \"%s\" must be at least %d long but was only %d".formatted(
+      builder.value,
+      builder.field,
+      builder.minLength,
+      builder.value.length()
+    );
   }
 
   @Override

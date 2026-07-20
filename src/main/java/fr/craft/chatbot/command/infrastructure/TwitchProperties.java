@@ -1,5 +1,6 @@
 package fr.craft.chatbot.command.infrastructure;
 
+@SuppressWarnings("NullAway.Init")
 public class TwitchProperties {
 
   private String channel;
