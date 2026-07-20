@@ -2,9 +2,12 @@
 # Ensures the Twitch chatbot environment variables are set, then runs ./mvnw.
 # Missing mandatory variables are always prompted for.
 #
-#   ./setup-env.sh                       # prompt only for what's missing, then run ./mvnw
-#   ./setup-env.sh -u|--update           # review and override every variable, even if already set
-#   eval "$(./setup-env.sh -c|--clear)"  # unset every variable in your current shell
+#   ./setup-env.sh                          # prompt only for what's missing, then run ./mvnw
+#   ./setup-env.sh -u|--update              # review and override every variable, even if already set
+#   eval "$(./setup-env.sh -c|--clear)"     # unset every variable in your current shell
+#   ./setup-env.sh --container              # run via Docker or Podman (auto-detected) instead of ./mvnw
+#   ./setup-env.sh --container=docker       # same, forcing Docker specifically
+#   ./setup-env.sh --container=podman       # same, forcing Podman specifically
 #
 # --clear also removes any saved block from your shell profile, and prints unset commands: a
 # subprocess cannot remove variables from the shell that started it, so eval is what actually
@@ -37,6 +40,8 @@ strip_profile_block() {
 
 update=0
 prompted=0
+container_requested=0
+container=""
 
 case "${1:-}" in
   -u | --update)
@@ -45,8 +50,17 @@ case "${1:-}" in
     ;;
   -c | --clear)
     strip_profile_block
-    echo 'unset TWITCH_CHANNEL TWITCH_BOT_USERNAME TWITCH_OAUTH_TOKEN CHATBOT_COMMANDS_FILE CHATBOT_LOCALE'
+    echo 'unset TWITCH_CHANNEL TWITCH_BOT_USERNAME TWITCH_OAUTH_TOKEN CHATBOT_COMMANDS_FILE CHATBOT_LOCALE CHATBOT_CONTAINER_TOOL'
     exit 0
+    ;;
+  --container)
+    container_requested=1
+    shift
+    ;;
+  --container=*)
+    container_requested=1
+    container=${1#--container=}
+    shift
     ;;
 esac
 
@@ -136,11 +150,75 @@ offer_save() {
     echo "export TWITCH_OAUTH_TOKEN=\"$TWITCH_OAUTH_TOKEN\""
     echo "export CHATBOT_COMMANDS_FILE=\"$CHATBOT_COMMANDS_FILE\""
     [ -n "$CHATBOT_LOCALE" ] && echo "export CHATBOT_LOCALE=\"$CHATBOT_LOCALE\""
+    [ -n "$CHATBOT_CONTAINER_TOOL" ] && echo "export CHATBOT_CONTAINER_TOOL=\"$CHATBOT_CONTAINER_TOOL\""
     echo "$PROFILE_END"
   } > "$profile"
   rm -f "$tmp"
 
   echo "Saved to $profile (open a new shell, or run '. $profile', for it to apply there)."
+}
+
+tool_usable() {
+  command -v "$1" >/dev/null 2>&1 && "$1" info >/dev/null 2>&1
+}
+
+validate_container_tool() {
+  if ! tool_usable "$container"; then
+    echo "$container is not available and working." >&2
+    exit 1
+  fi
+}
+
+detect_container_tool() {
+  docker_ok=0
+  podman_ok=0
+  tool_usable docker && docker_ok=1
+  tool_usable podman && podman_ok=1
+
+  if [ "$docker_ok" -eq 1 ] && [ "$podman_ok" -eq 0 ]; then
+    container=docker
+    return 0
+  fi
+
+  if [ "$podman_ok" -eq 1 ] && [ "$docker_ok" -eq 0 ]; then
+    container=podman
+    return 0
+  fi
+
+  if [ "$docker_ok" -eq 0 ] && [ "$podman_ok" -eq 0 ]; then
+    echo 'Neither docker nor podman is available and working.' >&2
+    exit 1
+  fi
+
+  if [ -n "${CHATBOT_CONTAINER_TOOL:-}" ]; then
+    container=$CHATBOT_CONTAINER_TOOL
+    return 0
+  fi
+
+  printf 'Both docker and podman are available. Which one do you want to use? [docker/podman]: '
+  read -r container_answer
+  case "$container_answer" in
+    docker | podman) container=$container_answer ;;
+    *)
+      echo 'Please answer "docker" or "podman".' >&2
+      exit 1
+      ;;
+  esac
+
+  CHATBOT_CONTAINER_TOOL=$container
+  prompted=1
+}
+
+# Trailing args ("$@") are Maven-specific (forwarded to ./mvnw in the
+# default path) and don't apply to a container run, so they're not
+# forwarded here.
+run_container() {
+  "$container" build -t chatbot .
+  "$container" run --rm \
+    -e TWITCH_CHANNEL -e TWITCH_BOT_USERNAME -e TWITCH_OAUTH_TOKEN -e CHATBOT_LOCALE \
+    -e CHATBOT_COMMANDS_FILE \
+    -v "$PWD/$CHATBOT_COMMANDS_FILE:/app/$CHATBOT_COMMANDS_FILE" \
+    chatbot
 }
 
 ask TWITCH_CHANNEL "Twitch channel name"
@@ -151,8 +229,20 @@ ask_secret TWITCH_OAUTH_TOKEN "Twitch OAuth token (no 'oauth:' prefix)"
 ask CHATBOT_COMMANDS_FILE "Commands file path"
 ask CHATBOT_LOCALE "Locale (fr or en, blank = auto-detect from system)"
 
+if [ "$container_requested" -eq 1 ]; then
+  if [ -n "$container" ]; then
+    validate_container_tool
+  else
+    detect_container_tool
+  fi
+fi
+
 if [ "$prompted" -eq 1 ]; then
   offer_save
 fi
 
-exec ./mvnw "$@"
+if [ -n "$container" ]; then
+  run_container
+else
+  exec ./mvnw "$@"
+fi

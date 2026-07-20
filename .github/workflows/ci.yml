@@ -29,3 +29,6 @@ jobs:
           cache: maven
 
       - run: ./mvnw verify
+
+      - name: Verify container image builds (setup-env.sh --container)
+        run: docker build -t chatbot .
