@@ -1,6 +1,6 @@
-package fr.craft.chatbot.command.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure;
 
-import fr.craft.chatbot.command.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
 import java.util.function.Consumer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

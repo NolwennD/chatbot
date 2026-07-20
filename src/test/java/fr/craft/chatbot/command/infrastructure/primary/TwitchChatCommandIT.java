@@ -3,8 +3,8 @@ package fr.craft.chatbot.command.infrastructure.primary;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fr.craft.chatbot.IntegrationTest;
-import fr.craft.chatbot.command.domain.ChatMessage;
-import fr.craft.chatbot.command.infrastructure.TwitchChatFacade;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;

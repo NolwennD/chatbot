@@ -1,4 +1,4 @@
-package fr.craft.chatbot.command.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.chat.TwitchChatBuilder;

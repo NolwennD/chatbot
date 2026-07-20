@@ -1,4 +1,4 @@
-package fr.craft.chatbot.command.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure;
 
 @SuppressWarnings("NullAway.Init")
 public class TwitchProperties {

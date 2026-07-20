@@ -1,4 +1,4 @@
-package fr.craft.chatbot.command.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

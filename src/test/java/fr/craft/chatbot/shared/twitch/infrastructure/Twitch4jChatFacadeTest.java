@@ -1,4 +1,4 @@
-package fr.craft.chatbot.command.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -10,7 +10,7 @@ import com.github.philippheuer.events4j.core.EventManager;
 import com.github.twitch4j.chat.ITwitchChat;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import fr.craft.chatbot.UnitTest;
-import fr.craft.chatbot.command.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;

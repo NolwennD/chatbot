@@ -1,4 +1,4 @@
-package fr.craft.chatbot.command.domain;
+package fr.craft.chatbot.shared.twitch.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

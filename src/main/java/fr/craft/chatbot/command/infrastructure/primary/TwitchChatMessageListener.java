@@ -1,7 +1,7 @@
 package fr.craft.chatbot.command.infrastructure.primary;
 
 import fr.craft.chatbot.command.application.HandleChatMessageService;
-import fr.craft.chatbot.command.infrastructure.TwitchChatFacade;
+import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
