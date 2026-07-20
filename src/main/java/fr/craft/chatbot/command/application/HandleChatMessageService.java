@@ -1,11 +1,11 @@
 package fr.craft.chatbot.command.application;
 
-import fr.craft.chatbot.command.domain.ChatMessage;
-import fr.craft.chatbot.command.domain.ChatMessagePublisher;
 import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandOutcome;
 import fr.craft.chatbot.command.domain.CommandRepository;
 import fr.craft.chatbot.command.domain.CommandResponseTranslator;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessagePublisher;
 import org.springframework.stereotype.Service;
 
 @Service

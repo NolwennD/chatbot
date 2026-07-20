@@ -7,7 +7,6 @@ import fr.craft.chatbot.command.domain.CommandResponseTranslator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +16,9 @@ class SpringCommandResponseTranslator implements CommandResponseTranslator {
   private final MessageSource messageSource;
   private final Locale locale;
 
-  SpringCommandResponseTranslator(MessageSource messageSource, @Value("${chatbot.locale:}") String locale) {
+  SpringCommandResponseTranslator(MessageSource messageSource, Locale locale) {
     this.messageSource = messageSource;
-    this.locale = SupportedLocale.resolve(locale, Locale.getDefault()).value();
+    this.locale = locale;
   }
 
   @Override

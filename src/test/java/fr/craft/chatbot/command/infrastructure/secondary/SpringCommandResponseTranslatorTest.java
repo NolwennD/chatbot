@@ -7,6 +7,7 @@ import fr.craft.chatbot.command.domain.CommandName;
 import fr.craft.chatbot.command.domain.CommandOutcome;
 import fr.craft.chatbot.command.domain.CommandResponse;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
@@ -20,8 +21,8 @@ class SpringCommandResponseTranslatorTest {
     messageSource.setDefaultEncoding("UTF-8");
   }
 
-  private final SpringCommandResponseTranslator translator = new SpringCommandResponseTranslator(messageSource, "fr");
-  private final SpringCommandResponseTranslator englishTranslator = new SpringCommandResponseTranslator(messageSource, "en");
+  private final SpringCommandResponseTranslator translator = new SpringCommandResponseTranslator(messageSource, Locale.FRENCH);
+  private final SpringCommandResponseTranslator englishTranslator = new SpringCommandResponseTranslator(messageSource, Locale.ENGLISH);
 
   @Test
   void shouldListKnownCommandsWhenTheCommandIsUnknown() {

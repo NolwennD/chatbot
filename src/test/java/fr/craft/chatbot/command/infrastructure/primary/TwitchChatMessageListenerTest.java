@@ -4,8 +4,8 @@ import static org.mockito.Mockito.verify;
 
 import fr.craft.chatbot.UnitTest;
 import fr.craft.chatbot.command.application.HandleChatMessageService;
-import fr.craft.chatbot.command.domain.ChatMessage;
-import fr.craft.chatbot.command.infrastructure.TwitchChatFacade;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

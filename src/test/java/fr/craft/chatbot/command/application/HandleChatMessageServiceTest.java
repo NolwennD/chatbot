@@ -4,10 +4,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import fr.craft.chatbot.UnitTest;
-import fr.craft.chatbot.command.domain.ChatMessage;
-import fr.craft.chatbot.command.domain.ChatMessagePublisher;
 import fr.craft.chatbot.command.domain.CommandRepository;
 import fr.craft.chatbot.command.domain.CommandResponseTranslator;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessagePublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

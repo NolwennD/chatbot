@@ -3,12 +3,14 @@ package fr.craft.chatbot.command.infrastructure.primary;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fr.craft.chatbot.IntegrationTest;
-import fr.craft.chatbot.command.domain.ChatMessage;
-import fr.craft.chatbot.command.infrastructure.TwitchChatFacade;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
+import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,18 +81,17 @@ class TwitchChatCommandIT {
     }
   }
 
-  @SuppressWarnings("NullAway.Init")
   static class RecordingTwitchChatFacade implements TwitchChatFacade {
 
-    private Consumer<ChatMessage> listener;
+    private final List<Consumer<ChatMessage>> listeners = new ArrayList<>();
 
     void receiveMessage(ChatMessage message) {
-      listener.accept(message);
+      listeners.forEach(listener -> listener.accept(message));
     }
 
     @Override
     public void onChatMessage(Consumer<ChatMessage> listener) {
-      this.listener = listener;
+      listeners.add(listener);
     }
 
     @Override

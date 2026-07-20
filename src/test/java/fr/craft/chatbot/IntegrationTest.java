@@ -1,6 +1,6 @@
 package fr.craft.chatbot;
 
-import fr.craft.chatbot.command.infrastructure.TwitchTestClientConfiguration;
+import fr.craft.chatbot.shared.twitch.infrastructure.TwitchTestClientConfiguration;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
