@@ -6,7 +6,6 @@ import fr.craft.chatbot.search.domain.PageLookup;
 import fr.craft.chatbot.search.domain.PageSummary;
 import fr.craft.chatbot.search.domain.SearchQuery;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClient;
@@ -28,7 +27,7 @@ class RestWikipediaPageLookup implements PageLookup {
     try {
       var response = restClient.get().uri(SUMMARY_URI, locale.getLanguage(), query.value()).retrieve().body(WikipediaSummaryResponse.class);
 
-      return Optional.of(toPageSummary(Objects.requireNonNull(response)));
+      return Optional.ofNullable(response).map(this::toPageSummary);
     } catch (RestClientException e) {
       // ponytail: any HTTP/network failure (404, 5xx, timeout) is treated as "not found" —
       // no distinction, no retry. Revisit if silent Wikipedia outages become a real problem.
