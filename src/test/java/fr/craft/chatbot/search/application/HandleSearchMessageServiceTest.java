@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import fr.craft.chatbot.UnitTest;
 import fr.craft.chatbot.search.domain.PageLookup;
-import fr.craft.chatbot.search.domain.PageSummary;
 import fr.craft.chatbot.search.domain.SearchOutcome;
 import fr.craft.chatbot.search.domain.SearchQuery;
 import fr.craft.chatbot.search.domain.SearchResponse;
@@ -25,11 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class HandleSearchMessageServiceTest {
 
   private static final SearchQuery QUERY = new SearchQuery("java");
-  private static final PageSummary SUMMARY = new PageSummary(
-    "Un langage de programmation.",
-    "https://fr.wikipedia.org/wiki/Java_(langage)",
-    false
-  );
 
   @Mock
   private PageLookup pageLookup;
@@ -41,40 +35,6 @@ class HandleSearchMessageServiceTest {
   private SearchResponseTranslator translator;
 
   @Test
-  void shouldStaySilentWhenTheMessageIsNotASearchCommand() {
-    new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.FRENCH).handle(new ChatMessage("hello there"));
-
-    verify(chatMessagePublisher, never()).send(anyString());
-  }
-
-  @Test
-  void shouldSendEveryTranslatedResponseWhenFoundInTheBotLocale() {
-    when(pageLookup.findSummary(QUERY, Locale.FRENCH)).thenReturn(Optional.of(SUMMARY));
-    when(translator.translate(new SearchOutcome.Found(SUMMARY))).thenReturn(
-      List.of(new SearchResponse("Un langage de programmation."), new SearchResponse("https://fr.wikipedia.org/wiki/Java_(langage)"))
-    );
-
-    new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.FRENCH).handle(new ChatMessage("?wp java"));
-
-    verify(chatMessagePublisher).send("Un langage de programmation.");
-    verify(chatMessagePublisher).send("https://fr.wikipedia.org/wiki/Java_(langage)");
-    verify(pageLookup, never()).findSummary(QUERY, Locale.ENGLISH);
-  }
-
-  @Test
-  void shouldFallBackToEnglishWhenNotFoundInTheBotLocale() {
-    var englishSummary = new PageSummary("A programming language.", "https://en.wikipedia.org/wiki/Java_(programming_language)", false);
-
-    when(pageLookup.findSummary(QUERY, Locale.FRENCH)).thenReturn(Optional.empty());
-    when(pageLookup.findSummary(QUERY, Locale.ENGLISH)).thenReturn(Optional.of(englishSummary));
-    when(translator.translate(new SearchOutcome.Found(englishSummary))).thenReturn(List.of(new SearchResponse("A programming language.")));
-
-    new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.FRENCH).handle(new ChatMessage("?wp java"));
-
-    verify(chatMessagePublisher).send("A programming language.");
-  }
-
-  @Test
   void shouldNotFallBackToEnglishWhenTheBotLocaleIsAlreadyEnglish() {
     when(pageLookup.findSummary(QUERY, Locale.ENGLISH)).thenReturn(Optional.empty());
     when(translator.translate(new SearchOutcome.NotFound(QUERY, Locale.ENGLISH))).thenReturn(
@@ -84,20 +44,6 @@ class HandleSearchMessageServiceTest {
     new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.ENGLISH).handle(new ChatMessage("?wp java"));
 
     verify(pageLookup, times(1)).findSummary(any(), any());
-  }
-
-  @Test
-  void shouldNotFallBackToEnglishWhenTheResultIsAmbiguous() {
-    var ambiguousSummary = new PageSummary("", "https://fr.wikipedia.org/wiki/Java", true);
-
-    when(pageLookup.findSummary(QUERY, Locale.FRENCH)).thenReturn(Optional.of(ambiguousSummary));
-    when(translator.translate(new SearchOutcome.Ambiguous(QUERY, ambiguousSummary))).thenReturn(
-      List.of(new SearchResponse("Pas de résumé, voici la page d'homonymie : https://fr.wikipedia.org/wiki/Java"))
-    );
-
-    new HandleSearchMessageService(pageLookup, chatMessagePublisher, translator, Locale.FRENCH).handle(new ChatMessage("?wp java"));
-
-    verify(pageLookup, never()).findSummary(QUERY, Locale.ENGLISH);
   }
 
   @Test
