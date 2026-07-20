@@ -53,21 +53,32 @@ class SearchChatCommandIT {
   void shouldWriteTheDisambiguationMessageWhenTheResultIsAmbiguous() {
     twitchChatFacade.receiveMessage(new ChatMessage("?wp java"));
 
-    assertThat(REPLY_FILE).hasContent("Pas de résumé pour \"java\", voici la page d'homonymie : https://fr.wikipedia.org/wiki/Java");
+    assertThat(REPLY_FILE).hasContent(
+      """
+      Pas de résumé pour "java", voici la page d'homonymie : https://fr.wikipedia.org/wiki/Java"""
+    );
   }
 
   @Test
   void shouldWriteTheExtractThenTheLinkWhenFoundDirectlyInTheBotLocale() {
     twitchChatFacade.receiveMessage(new ChatMessage("?wiki coq de java"));
 
-    assertThat(REPLY_FILE).hasContent("Une race de poule.\nhttps://fr.wikipedia.org/wiki/Coq_de_Java");
+    assertThat(REPLY_FILE).hasContent(
+      """
+      Une race de poule.
+      https://fr.wikipedia.org/wiki/Coq_de_Java"""
+    );
   }
 
   @Test
   void shouldFallBackToEnglishAndWriteBothLinesWhenNotFoundInTheBotLocale() {
     twitchChatFacade.receiveMessage(new ChatMessage("?wiki onboarding"));
 
-    assertThat(REPLY_FILE).hasContent("Onboarding is the process of integrating a new employee.\nhttps://en.wikipedia.org/wiki/Onboarding");
+    assertThat(REPLY_FILE).hasContent(
+      """
+      Onboarding is the process of integrating a new employee.
+      https://en.wikipedia.org/wiki/Onboarding"""
+    );
   }
 
   static class RecordingTwitchChatFacade implements TwitchChatFacade {
