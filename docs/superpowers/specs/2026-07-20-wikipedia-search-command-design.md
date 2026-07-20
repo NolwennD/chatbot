@@ -1,109 +1,108 @@
-# `?wp`/`?wiki {mot}` — recherche Wikipedia dans le chat
+# `?wp`/`?wiki {term}` — Wikipedia search in chat
 
-## Contexte et objectif
+## Context and goal
 
-Ajouter une commande `?wp {mot}` (ou `?wiki {mot}`, les deux préfixes sont
-équivalents) qui lance une recherche Wikipedia (dans la
-langue configurée du bot en priorité, puis en anglais en repli) et envoie
-dans le chat Twitch un court résumé de la page trouvée, suivi du lien vers
-l'article.
+Add a `?wp {term}` command (or `?wiki {term}`, the two prefixes are
+equivalent) that triggers a Wikipedia search (in the bot's configured
+language first, then English as a fallback) and sends a short summary of
+the page found to Twitch chat, followed by the link to the article.
 
-Ce n'est pas une commande `!` classique (celles définies dans
-`commands.txt`) : elle a sa propre logique métier (appel HTTP, choix de
-langue, troncature), portée par un nouveau bounded context `search`, sans
-dépendance vers le bounded context `command` existant.
+This is not a classic `!` command (the kind defined in `commands.txt`): it
+has its own business logic (HTTP call, language choice, truncation),
+carried by a new `search` bounded context, with no dependency on the
+existing `command` bounded context.
 
-## Refactor préalable : sortir le plumbing Twitch et la locale de `command`
+## Preliminary refactor: extract Twitch plumbing and locale out of `command`
 
-Aujourd'hui, `ChatMessage`, `ChatMessagePublisher`, `TwitchChatFacade` et la
-résolution de locale (fr/en, fallback anglais) vivent dans le bounded
-context `command`. Le contexte `search` a besoin des deux mêmes choses
-(recevoir/envoyer des messages Twitch, connaître la langue du bot), et les
-règles ArchUnit du projet interdisent à un contexte de dépendre du domaine
-d'un autre. Ces éléments sont donc extraits en shared kernels.
+Today, `ChatMessage`, `ChatMessagePublisher`, `TwitchChatFacade`, and locale
+resolution (fr/en, English fallback) live in the `command` bounded context.
+The `search` context needs the same two things (receive/send Twitch
+messages, know the bot's language), and the project's ArchUnit rules
+forbid a context from depending on another context's domain. These
+elements are therefore extracted into shared kernels.
 
-### `shared.twitch` (nouveau shared kernel)
+### `shared.twitch` (new shared kernel)
 
-- `domain.ChatMessage` — déplacé depuis `command.domain` (inchangé).
-- `domain.ChatMessagePublisher` — déplacé depuis `command.domain` (inchangé).
+- `domain.ChatMessage` — moved from `command.domain` (unchanged).
+- `domain.ChatMessagePublisher` — moved from `command.domain` (unchanged).
 - `infrastructure.TwitchChatFacade`, `infrastructure.Twitch4jChatFacade`,
   `infrastructure.TwitchClientConfiguration`, `infrastructure.TwitchProperties`
-  — déplacés depuis `command.infrastructure`, package bare (ni `primary` ni
-  `secondary`) comme aujourd'hui : ce sont des adaptateurs utilisés
-  directement par les listeners primaires de chaque contexte, pas des
-  implémentations de port appelées uniquement par une couche secondaire.
-- `infrastructure.secondary.TwitchChatMessagePublisher` — déplacé depuis
-  `command.infrastructure.secondary` (implémente `ChatMessagePublisher`).
+  — moved from `command.infrastructure`, bare package (neither `primary`
+  nor `secondary`) as they are today: these are adapters used directly by
+  each context's primary listeners, not port implementations called only
+  by a secondary layer.
+- `infrastructure.secondary.TwitchChatMessagePublisher` — moved from
+  `command.infrastructure.secondary` (implements `ChatMessagePublisher`).
 
-Chaque bounded context (`command`, `search`) garde son propre listener
-primaire (`TwitchChatMessageListener` / `SearchChatMessageListener`) qui
-s'abonne indépendamment à `TwitchChatFacade` et route les messages reçus
-vers son propre service applicatif. Les deux contextes reçoivent donc tous
-les messages du chat et filtrent chacun ce qui les concerne (`!` pour l'un,
-`?wp` pour l'autre).
+Each bounded context (`command`, `search`) keeps its own primary listener
+(`TwitchChatMessageListener` / `SearchChatMessageListener`), which
+independently subscribes to `TwitchChatFacade` and routes received
+messages to its own application service. Both contexts therefore receive
+every chat message and each filters what's relevant to it (`!` for one,
+`?wp` for the other).
 
-### `shared.locale` (nouveau shared kernel)
+### `shared.locale` (new shared kernel)
 
-- `infrastructure.LocaleConfiguration` (package-privée) : une seule classe,
-  qui expose un bean `Locale` résolu une fois au démarrage à partir de
-  `chatbot.locale` (avec repli sur `Locale.getDefault()` puis sur l'anglais
-  si la langue configurée n'est ni `fr` ni `en` — logique reprise telle
-  quelle de l'actuel `SupportedLocale`).
-- Pas de type domaine exposé : la logique de résolution reste un détail
-  privé de cette classe de configuration, rien d'autre n'en a besoin.
-- `command` et `search` injectent simplement un `Locale` dans leurs
-  constructeurs plutôt que de relire `chatbot.locale` et de résoudre la
-  locale chacun de leur côté.
+- `infrastructure.LocaleConfiguration` (package-private): a single class
+  that exposes a `Locale` bean resolved once at startup from
+  `chatbot.locale` (falling back to `Locale.getDefault()`, then to English
+  if the configured language is neither `fr` nor `en` — logic carried over
+  as-is from the current `SupportedLocale`).
+- No domain type exposed: the resolution logic stays a private detail of
+  this configuration class, nothing else needs it.
+- `command` and `search` simply inject a `Locale` into their constructors
+  instead of each independently re-reading `chatbot.locale` and resolving
+  the locale themselves.
 
-### Ce qui reste dans `command`
+### What stays in `command`
 
 `CommandName`, `Commands`, `CommandOutcome`, `CommandRepository`,
 `CommandResponse`, `CommandResponseTranslator`, `FileCommandRepository`
-restent inchangés. Seuls les imports de `ChatMessage`/`ChatMessagePublisher`
-pointent désormais vers `shared.twitch.domain`, et
-`SpringCommandResponseTranslator` reçoit un `Locale` injecté au lieu de
-résoudre `chatbot.locale` lui-même.
+remain unchanged. Only the `ChatMessage`/`ChatMessagePublisher` imports now
+point to `shared.twitch.domain`, and `SpringCommandResponseTranslator`
+receives an injected `Locale` instead of resolving `chatbot.locale` itself.
 
-## Nouveau bounded context `search`
+## New `search` bounded context
 
-### Domaine (`search.domain`)
+### Domain (`search.domain`)
 
-- `SearchQuery(String value)` — record validé (non vide). Méthode statique
-  `Optional<SearchQuery> parse(String content)` qui reconnaît l'un des
-  préfixes déclencheurs `?wp ` ou `?wiki ` (même style que
-  `CommandName.parse`) et garde le reste comme terme recherché.
+- `SearchQuery(String value)` — validated record (non-blank). Static
+  method `Optional<SearchQuery> parse(String content)` that recognizes
+  either trigger prefix `?wp ` or `?wiki ` (same style as
+  `CommandName.parse`) and keeps the rest as the search term.
 - `PageSummary(String extract, String url, boolean disambiguation)` —
-  record. `disambiguation` reflète directement le champ `type` renvoyé par
-  l'API Wikipedia (`"disambiguation"` ou non) — voir plus bas pourquoi on
-  se base sur ce champ explicite plutôt que de deviner à partir du contenu
-  de `extract` (une page d'homonymie peut très bien avoir un extrait non
-  vide mais générique, ex: "Idris may refer to:"). Seul un `Assert.notNull`
-  est appliqué sur `extract` (pas `notBlank`, un extrait vide reste
-  possible). Le constructeur compact tronque `extract` à 200 caractères
-  s'il n'est pas vide : si le texte dépasse la limite, on coupe à 200, on
-  recule jusqu'au dernier espace (pour ne pas trancher un mot), et on
-  ajoute `…`. En dessous de la limite (ou vide), le texte passe tel quel.
-- `SearchOutcome` (sealed) :
-  - `Found(PageSummary)` — un résumé exploitable a été trouvé.
-  - `Ambiguous(SearchQuery query, PageSummary summary)` — la page trouvée
-    est une page d'homonymie (`summary.disambiguation() == true`).
-  - `NotFound(SearchQuery query)` — rien trouvé (404 ou erreur), y compris
-    après repli anglais.
-  - Méthode statique `SearchOutcome.from(SearchQuery query, Optional<PageSummary> summary)`
-    qui fait cette classification : `Optional.empty()` → `NotFound` ;
-    `summary.disambiguation()` → `Ambiguous` ; sinon → `Found`.
-- `PageLookup` (port) : `Optional<PageSummary> findSummary(SearchQuery query, Locale locale)`.
-  `Optional.empty()` signifie une absence réelle (404 ou erreur) ; une
-  page d'homonymie (200, `type: "disambiguation"`) reste un
-  `Optional.of(...)` avec `disambiguation = true` — c'est
-  `SearchOutcome.from` qui fait la distinction, pas le port.
-- `SearchResponse(String value)` — record validé non-null/trim, miroir de
-  `CommandResponse`.
-- `SearchResponseTranslator` (port) : `List<SearchResponse> translate(SearchOutcome outcome)`.
-  - `Found` → deux réponses, dans l'ordre : le résumé, puis le lien.
-  - `Ambiguous` → une seule réponse traduite combinant terme et lien :
-    `Pas de résumé pour "{0}", voici la page d'homonymie : {1}`.
-  - `NotFound` → un seul message d'erreur traduit.
+  record. `disambiguation` reflects directly the `type` field returned by
+  the Wikipedia API (`"disambiguation"` or not) — see below for why we
+  rely on this explicit field rather than guessing from the content of
+  `extract` (a disambiguation page can very well have a non-empty but
+  generic extract, e.g. "Idris may refer to:"). Only an `Assert.notNull`
+  is applied to `extract` (not `notBlank`, an empty extract remains
+  possible). The compact constructor truncates `extract` to 200 characters
+  if it's not empty: if the text exceeds the limit, it's cut at 200,
+  backed off to the last space (so as not to slice a word in half), and
+  `…` is appended. Below the limit (or empty), the text passes through
+  unchanged.
+- `SearchOutcome` (sealed):
+  - `Found(PageSummary)` — a usable summary was found.
+  - `Ambiguous(SearchQuery query, PageSummary summary)` — the page found
+    is a disambiguation page (`summary.disambiguation() == true`).
+  - `NotFound(SearchQuery query)` — nothing found (404 or error), including
+    after the English fallback.
+  - Static method `SearchOutcome.from(SearchQuery query, Optional<PageSummary> summary)`
+    performs this classification: `Optional.empty()` → `NotFound`;
+    `summary.disambiguation()` → `Ambiguous`; otherwise → `Found`.
+- `PageLookup` (port): `Optional<PageSummary> findSummary(SearchQuery query, Locale locale)`.
+  `Optional.empty()` means a genuine absence (404 or error); a
+  disambiguation page (200, `type: "disambiguation"`) remains an
+  `Optional.of(...)` with `disambiguation = true` — it's `SearchOutcome.from`
+  that makes the distinction, not the port.
+- `SearchResponse(String value)` — record validated non-null/trimmed,
+  mirroring `CommandResponse`.
+- `SearchResponseTranslator` (port): `List<SearchResponse> translate(SearchOutcome outcome)`.
+  - `Found` → two responses, in order: the summary, then the link.
+  - `Ambiguous` → a single translated response combining the term and the
+    link: `Pas de résumé pour "{0}", voici la page d'homonymie : {1}`.
+  - `NotFound` → a single translated error message.
 
 ### Application (`search.application.HandleSearchMessageService`)
 
@@ -114,93 +113,91 @@ SearchQuery.parse(message.content())
   .ifPresent(responses -> responses.forEach(r -> chatMessagePublisher.send(r.value())));
 ```
 
-`resolveOutcome` :
+`resolveOutcome`:
 
-1. Essaie `pageLookup.findSummary(query, botLocale)`, puis classe le
-   résultat avec `SearchOutcome.from(query, résultat)`.
-2. Si cette classification est `NotFound` (absence réelle) et que
-   `botLocale` n'est pas déjà l'anglais, retente en anglais et reclasse le
-   nouveau résultat — c'est le résultat final.
-3. Si la classification initiale est `Found` ou `Ambiguous`, aucun repli
-   n'est tenté : le repli anglais ne s'applique qu'à une absence réelle
-   (`NotFound`), jamais à une page d'homonymie. Un test a montré qu'une
-   page d'homonymie en français (ex: "Java") peut correspondre en anglais
-   à un article "standard" mais sur un tout autre sujet (l'île de Java,
-   pas le langage) — remplacer l'homonymie locale par ce résultat serait
-   trompeur plutôt qu'utile.
+1. Tries `pageLookup.findSummary(query, botLocale)`, then classifies the
+   result with `SearchOutcome.from(query, result)`.
+2. If this classification is `NotFound` (genuine absence) and `botLocale`
+   isn't already English, retries in English and reclassifies the new
+   result — this is the final result.
+3. If the initial classification is `Found` or `Ambiguous`, no fallback is
+   attempted: the English fallback only applies to a genuine absence
+   (`NotFound`), never to a disambiguation page. A test showed that a
+   French disambiguation page (e.g. "Java") can correspond in English to a
+   "standard" article but on a completely different topic (the island of
+   Java, not the programming language) — replacing the local
+   disambiguation with that result would be misleading rather than
+   helpful.
 
-Cette logique de repli reste dans l'application (orchestration : quel
-appel faire et dans quel ordre), la classification elle-même
-(`Found`/`Ambiguous`/`NotFound`) reste dans le domaine via
+This fallback logic stays in the application layer (orchestration: which
+call to make and in what order); the classification itself
+(`Found`/`Ambiguous`/`NotFound`) stays in the domain via
 `SearchOutcome.from`.
 
-### Infrastructure primaire (`search.infrastructure.primary`)
+### Primary infrastructure (`search.infrastructure.primary`)
 
-`SearchChatMessageListener` — mirror exact de
-`command.infrastructure.primary.TwitchChatMessageListener` : s'abonne à
-`shared.twitch.infrastructure.TwitchChatFacade` et route vers
+`SearchChatMessageListener` — exact mirror of
+`command.infrastructure.primary.TwitchChatMessageListener`: subscribes to
+`shared.twitch.infrastructure.TwitchChatFacade` and routes to
 `HandleSearchMessageService`.
 
-### Infrastructure secondaire (`search.infrastructure.secondary`)
+### Secondary infrastructure (`search.infrastructure.secondary`)
 
-- `RestWikipediaPageLookup` implémente `PageLookup` :
-  - utilise `RestClient` de Spring (déjà disponible via
-    `spring-boot-starter-webmvc`, aucune nouvelle dépendance) ;
-  - appelle `GET https://{locale.getLanguage()}.wikipedia.org/api/rest_v1/page/summary/{query encodé}` ;
-  - désérialise un DTO interne minimal
-    (`@JsonIgnoreProperties(ignoreUnknown = true)`) exposant `type`,
-    `extract` et `content_urls.desktop.page` ; `disambiguation` du
-    `PageSummary` construit vaut `"disambiguation".equals(type)` ;
-  - un 404 (`HttpClientErrorException.NotFound`, confirmé par test manuel
-    contre l'API réelle) → `Optional.empty()` ;
-  - toute autre erreur réseau/HTTP (5xx, timeout) → également
-    `Optional.empty()`, traitée comme "page non trouvée" côté chat.
-    Simplification volontaire : pas de distinction "page absente" vs "API
-    indisponible", pas de retry. Marqué en commentaire `ponytail:` dans le
-    code, avec piste d'amélioration si ça devient gênant en usage réel.
-- `SpringSearchResponseTranslator` implémente `SearchResponseTranslator` :
-  - `NotFound` → message traduit via `MessageSource` + `Locale` injecté,
-    nouvelle clé `search.notfound` :
-    - fr : `Aucun article trouvé pour "{0}".`
-    - en : `No article found for "{0}".`
-  - `Ambiguous` → message traduit, nouvelle clé `search.ambiguous` :
-    - fr : `Pas de résumé pour "{0}", voici la page d'homonymie : {1}`
-    - en : `No summary for "{0}", here is the disambiguation page: {1}`
-  - `Found` → construit directement les deux `SearchResponse` (résumé,
-    lien), pas de traduction nécessaire.
+- `RestWikipediaPageLookup` implements `PageLookup`:
+  - uses Spring's `RestClient` (already available via
+    `spring-boot-starter-webmvc`, no new dependency);
+  - calls `GET https://{locale.getLanguage()}.wikipedia.org/api/rest_v1/page/summary/{encoded query}`;
+  - deserializes a minimal internal DTO
+    (`@JsonIgnoreProperties(ignoreUnknown = true)`) exposing `type`,
+    `extract`, and `content_urls.desktop.page`; the constructed
+    `PageSummary`'s `disambiguation` is `"disambiguation".equals(type)`;
+  - a 404 (`HttpClientErrorException.NotFound`, confirmed by manual testing
+    against the real API) → `Optional.empty()`;
+  - any other network/HTTP error (5xx, timeout) → also `Optional.empty()`,
+    treated as "page not found" on the chat side. Deliberate
+    simplification: no distinction between "page absent" and "API
+    unavailable", no retry. Marked with a `ponytail:` comment in the code,
+    with a path forward if this becomes an issue in real usage.
+- `SpringSearchResponseTranslator` implements `SearchResponseTranslator`:
+  - `NotFound` → message translated via `MessageSource` + injected
+    `Locale`, new key `search.notfound`:
+    - fr: `Aucun article trouvé pour "{0}".`
+    - en: `No article found for "{0}".`
+  - `Ambiguous` → translated message, new key `search.ambiguous`:
+    - fr: `Pas de résumé pour "{0}", voici la page d'homonymie : {1}`
+    - en: `No summary for "{0}", here is the disambiguation page: {1}`
+  - `Found` → builds the two `SearchResponse`s directly (summary, link),
+    no translation needed.
 
-## Limites connues (hors scope de cette itération)
+## Known limitations (out of scope for this iteration)
 
-- **Pas de recherche floue** : `?wp {mot}` fait un lookup direct du titre
-  (pas d'appel à l'API de recherche full-text de Wikipedia). Un terme
-  imprécis (qui ne correspond à aucun titre ni page d'homonymie) ne sera
-  pas résolu intelligemment. Piste pour une prochaine itération : en cas de
-  404, retenter via l'API de recherche (`action=query&list=search`) pour
-  proposer le meilleur titre correspondant.
-- **Page d'homonymie : pas de liste des significations proposée.** On
-  renvoie juste le lien vers la page d'homonymie (`Ambiguous`), sans
-  extraire ni proposer les différentes significations sous forme de
-  commandes pré-construites. Une tentative de récupération des liens de la
-  page (`action=query&prop=links`) montre que l'API renvoie tous les liens
-  de la page, pas seulement les significations listées — il faudrait
-  parser la structure de la liste d'homonymie pour filtrer correctement.
-  Piste pour une prochaine itération.
-- **Troncature à 200 caractères fixe**, non configurable. Si le besoin
-  d'ajuster cette valeur sans recompiler apparaît, l'extraire en propriété
-  (`chatbot.wikipedia.summary-limit` ou similaire) sera trivial.
-- **Erreurs API (hors homonymie) traitées uniformément comme "non
-  trouvé"** (voir ci-dessus).
+- **No fuzzy search**: `?wp {term}` does a direct title lookup (no call to
+  Wikipedia's full-text search API). An imprecise term (matching no title
+  and no disambiguation page) won't be resolved intelligently. Path for a
+  future iteration: on a 404, retry via the search API
+  (`action=query&list=search`) to suggest the best-matching title.
+- **Disambiguation page: no list of meanings offered.** We just return the
+  link to the disambiguation page (`Ambiguous`), without extracting or
+  offering the different meanings as pre-built commands. An attempt to
+  fetch the page's links (`action=query&prop=links`) shows the API returns
+  every link on the page, not just the listed meanings — the
+  disambiguation list's structure would need to be parsed to filter
+  correctly. Path for a future iteration.
+- **Fixed 200-character truncation**, not configurable. If the need to
+  adjust this value without recompiling arises, extracting it into a
+  property (`chatbot.wikipedia.summary-limit` or similar) will be trivial.
+- **API errors (other than disambiguation) uniformly treated as "not
+  found"** (see above).
 
 ## Tests
 
-- Domaine : tests unitaires classiques sur `SearchQuery.parse`,
-  `PageSummary` (troncature, cas limite et cas sans coupure),
-  `SearchOutcome`.
-- Application : `HandleSearchMessageService` testé avec des fakes pour
-  `PageLookup` / `ChatMessagePublisher` / `SearchResponseTranslator`, dans
-  le même style que les tests existants de `HandleChatMessageService`.
-- `RestWikipediaPageLookup` : testé avec `MockRestServiceServer` (déjà
-  disponible via `spring-boot-starter-test`) pour simuler les réponses
-  200/404 de Wikipedia sans appel réseau réel.
-- Coverage JaCoCo stricte à respecter comme partout ailleurs dans le
-  projet (voir CLAUDE.md : zéro ligne/branche manquée par classe).
+- Domain: classic unit tests on `SearchQuery.parse`, `PageSummary`
+  (truncation, boundary case and no-cut case), `SearchOutcome`.
+- Application: `HandleSearchMessageService` tested with fakes for
+  `PageLookup` / `ChatMessagePublisher` / `SearchResponseTranslator`, in
+  the same style as the existing `HandleChatMessageService` tests.
+- `RestWikipediaPageLookup`: tested with `MockRestServiceServer` (already
+  available via `spring-boot-starter-test`) to simulate Wikipedia's
+  200/404 responses without a real network call.
+- Strict JaCoCo coverage to respect as everywhere else in the project (see
+  CLAUDE.md: zero missed line/branch per class).
