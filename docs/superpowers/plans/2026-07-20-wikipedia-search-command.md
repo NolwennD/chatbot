@@ -505,7 +505,10 @@ Expected: Still fails to compile — `Twitch4jChatFacadeTest`, `TwitchTestClient
 
 - [ ] **Step 1: Create the package-info file**
 
+Note: `HexagonalArchTest.SharedKernels.topLevelSharedPackageShouldOnlyContainSharedKernels` excludes `shared..domain` and `shared..infrastructure.*` package-infos from needing `@SharedKernel` — but that `.*` exclusion only matches a package-info **nested inside** `infrastructure` (e.g. `infrastructure.primary`), not the bare `infrastructure` package-info itself (this was discovered the hard way in Task 2: `shared.locale.infrastructure.package-info.java`, which is bare, needed `@SharedKernel` added to pass). This package-info is also bare (`shared.twitch.infrastructure`, no further subpackage), so it needs both annotations from the start:
+
 ```java
+@fr.craft.chatbot.SharedKernel
 @org.jspecify.annotations.NullMarked
 package fr.craft.chatbot.shared.twitch.infrastructure;
 ```
