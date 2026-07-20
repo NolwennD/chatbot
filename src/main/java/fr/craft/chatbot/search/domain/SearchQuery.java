@@ -20,7 +20,6 @@ public record SearchQuery(String value) {
       .filter(prefix -> trimmed.startsWith(prefix + " "))
       .findFirst()
       .map(prefix -> trimmed.substring(prefix.length()).trim())
-      .filter(term -> !term.isBlank())
       .map(SearchQuery::new);
   }
 }
