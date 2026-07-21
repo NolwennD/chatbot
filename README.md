@@ -10,6 +10,10 @@ You need to have Java 25:
 
 - [JDK 25](https://openjdk.java.net/projects/jdk/25/)
 
+Alternatively, install [mise](https://mise.jdx.dev/) and run `mise install` — it provisions Java from
+[mise.toml](mise.toml). Contributors who also need Node, pnpm and [jdtls](CLAUDE.md#creating--refactoring-java-code-jdtls) should instead run
+`MISE_ENV=dev mise install && mise run jdtls-install`, which layers [mise.dev.toml](mise.dev.toml) on top.
+
 ### Twitch Credentials
 
 The bot needs a Twitch account and an OAuth token with chat scopes (`chat:read`, `chat:edit`). Generate one for
@@ -27,7 +31,8 @@ while the application is running — no restart needed.
 
 ### Node.js and PNPM (only for contributing)
 
-Before you can build this project, you must install and configure the following dependencies on your machine:
+Before you can build this project, you must install and configure the following dependencies on your machine
+(or use `MISE_ENV=dev mise install`, see [above](#java)):
 
 [Node.js](https://nodejs.org/): We use Node to run a development web server and build the project.
 Depending on your system, you can install Node either from source or as a pre-packaged bundle.

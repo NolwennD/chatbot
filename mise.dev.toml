@@ -1,0 +1,25 @@
+[tools]
+node = "24"
+pnpm = "11"
+
+[env]
+_.path = ["{{ env.HOME }}/.local/share/jdtls/bin"]
+
+# jdtls has no mise/asdf registry entry (Eclipse ships it as a plain tarball,
+# not GitHub releases), so it's fetched by hand instead of via [tools].
+[tasks.jdtls-install]
+description = "Download jdtls (Eclipse JDT Language Server) into ~/.local/share/jdtls"
+run = '''
+#!/bin/sh
+set -eu
+dest="$HOME/.local/share/jdtls"
+if [ -x "$dest/bin/jdtls" ]; then
+  echo "jdtls already installed at $dest"
+  exit 0
+fi
+mkdir -p "$dest"
+tmp=$(mktemp)
+curl -fsSL https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz -o "$tmp"
+tar -xz -C "$dest" -f "$tmp"
+rm -f "$tmp"
+'''
