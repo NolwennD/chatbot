@@ -27,20 +27,22 @@ class RestWikipediaPageLookup implements PageLookup {
     try {
       var response = restClient.get().uri(SUMMARY_URI, locale.getLanguage(), query.value()).retrieve().body(WikipediaSummaryResponse.class);
 
-      return Optional.ofNullable(response).map(this::toPageSummary);
-    } catch (RestClientException e) {
+      return Optional.ofNullable(response).map(WikipediaSummaryResponse::toPageSummary);
+    } catch (RestClientException _) {
       // ponytail: any HTTP/network failure (404, 5xx, timeout) is treated as "not found" —
       // no distinction, no retry. Revisit if silent Wikipedia outages become a real problem.
       return Optional.empty();
     }
   }
 
-  private PageSummary toPageSummary(WikipediaSummaryResponse response) {
-    return new PageSummary(response.extract(), response.contentUrls().desktop().page(), "disambiguation".equals(response.type()));
-  }
-
   @JsonIgnoreProperties(ignoreUnknown = true)
   private record WikipediaSummaryResponse(String type, String extract, @JsonProperty("content_urls") ContentUrls contentUrls) {
+    private static final String DISAMBIGUATION = "disambiguation";
+
+    private PageSummary toPageSummary() {
+      return new PageSummary(extract(), contentUrls().desktop().page(), DISAMBIGUATION.equals(type()));
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     private record ContentUrls(Desktop desktop) {}
 
