@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import fr.craft.chatbot.IntegrationTest;
 import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
-import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessagePublisher;
+import fr.craft.chatbot.shared.twitch.infrastructure.primary.TwitchChatReceiver;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -23,13 +24,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 @IntegrationTest(properties = "chatbot.commands.file=src/test/resources/command/commands.txt")
-@Import(TwitchChatCommandIT.RecordingFacadeConfiguration.class)
+@Import(TwitchChatCommandIT.RecordingConfiguration.class)
 class TwitchChatCommandIT {
 
   private static final Path REPLY_FILE = Path.of("target/integration-test-output/chatbot-reply.txt");
 
   @Autowired
-  private RecordingTwitchChatFacade twitchChatFacade;
+  private FakeTwitchChatReceiver twitchChatReceiver;
 
   @BeforeEach
   @AfterEach
@@ -39,49 +40,49 @@ class TwitchChatCommandIT {
 
   @Test
   void shouldWriteTheKnownCommandContentToTheOutputFileWhenReceivedFromChat() {
-    twitchChatFacade.receiveMessage(new ChatMessage("!projet"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("!projet"));
 
     assertThat(REPLY_FILE).hasContent("Un chatbot Twitch qui répond aux commandes du chat");
   }
 
   @Test
   void shouldListKnownCommandsWhenTheCommandIsUnknown() {
-    twitchChatFacade.receiveMessage(new ChatMessage("!doesnotexist"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("!doesnotexist"));
 
     assertThat(REPLY_FILE).hasContent("Commande inconnue. Commandes disponibles : !discord, !projet");
   }
 
   @Test
   void shouldListKnownCommandsWhenTheCommandsCommandIsReceived() {
-    twitchChatFacade.receiveMessage(new ChatMessage("!commands"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("!commands"));
 
     assertThat(REPLY_FILE).hasContent("!discord, !projet");
   }
 
   @Test
   void shouldNotWriteAnOutputFileWhenTheMessageIsNotACommand() {
-    twitchChatFacade.receiveMessage(new ChatMessage("hello there"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("hello there"));
 
     assertThat(REPLY_FILE).doesNotExist();
   }
 
   @Nested
   @IntegrationTest(properties = "chatbot.commands.file=src/test/resources/command/empty-commands.txt")
-  @Import(TwitchChatCommandIT.RecordingFacadeConfiguration.class)
+  @Import(TwitchChatCommandIT.RecordingConfiguration.class)
   class NoCommandsAvailable {
 
     @Autowired
-    private RecordingTwitchChatFacade twitchChatFacade;
+    private FakeTwitchChatReceiver twitchChatReceiver;
 
     @Test
     void shouldSayThereAreNoCommandsWhenNoneAreConfigured() {
-      twitchChatFacade.receiveMessage(new ChatMessage("!anything"));
+      twitchChatReceiver.receiveMessage(new ChatMessage("!anything"));
 
       assertThat(REPLY_FILE).hasContent("Aucune commande n'est disponible pour le moment.");
     }
   }
 
-  static class RecordingTwitchChatFacade implements TwitchChatFacade {
+  static class FakeTwitchChatReceiver implements TwitchChatReceiver {
 
     private final List<Consumer<ChatMessage>> listeners = new ArrayList<>();
 
@@ -93,9 +94,12 @@ class TwitchChatCommandIT {
     public void onChatMessage(Consumer<ChatMessage> listener) {
       listeners.add(listener);
     }
+  }
+
+  static class RecordingChatMessagePublisher implements ChatMessagePublisher {
 
     @Override
-    public void sendMessage(String message) {
+    public void send(String message) {
       try {
         Files.createDirectories(REPLY_FILE.getParent());
         Files.writeString(REPLY_FILE, message);
@@ -106,12 +110,18 @@ class TwitchChatCommandIT {
   }
 
   @TestConfiguration
-  static class RecordingFacadeConfiguration {
+  static class RecordingConfiguration {
 
     @Bean
     @Primary
-    RecordingTwitchChatFacade recordingTwitchChatFacade() {
-      return new RecordingTwitchChatFacade();
+    FakeTwitchChatReceiver fakeTwitchChatReceiver() {
+      return new FakeTwitchChatReceiver();
+    }
+
+    @Bean
+    @Primary
+    RecordingChatMessagePublisher recordingChatMessagePublisher() {
+      return new RecordingChatMessagePublisher();
     }
   }
 }

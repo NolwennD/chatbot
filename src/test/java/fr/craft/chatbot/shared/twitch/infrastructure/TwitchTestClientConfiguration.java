@@ -1,7 +1,7 @@
 package fr.craft.chatbot.shared.twitch.infrastructure;
 
-import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
-import java.util.function.Consumer;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessagePublisher;
+import fr.craft.chatbot.shared.twitch.infrastructure.primary.TwitchChatReceiver;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -11,17 +11,16 @@ import org.springframework.context.annotation.Profile;
 public class TwitchTestClientConfiguration {
 
   @Bean
-  TwitchChatFacade twitchChatFacade() {
-    return new TwitchChatFacade() {
-      @Override
-      public void onChatMessage(Consumer<ChatMessage> listener) {
-        // no real Twitch connection in tests: nothing to subscribe to
-      }
+  TwitchChatReceiver twitchChatReceiver() {
+    return listener -> {
+      // no real Twitch connection in tests: nothing to subscribe to
+    };
+  }
 
-      @Override
-      public void sendMessage(String message) {
-        // no real Twitch connection in tests: nothing to send
-      }
+  @Bean
+  ChatMessagePublisher chatMessagePublisher() {
+    return message -> {
+      // no real Twitch connection in tests: nothing to send
     };
   }
 }

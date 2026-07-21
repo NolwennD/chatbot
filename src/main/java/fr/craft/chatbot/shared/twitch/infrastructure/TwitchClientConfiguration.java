@@ -1,6 +1,7 @@
 package fr.craft.chatbot.shared.twitch.infrastructure;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.twitch4j.chat.ITwitchChat;
 import com.github.twitch4j.chat.TwitchChatBuilder;
 import fr.craft.chatbot.shared.generation.domain.ExcludeFromGeneratedCodeCoverage;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,12 +21,10 @@ class TwitchClientConfiguration {
 
   @Bean
   @ExcludeFromGeneratedCodeCoverage(reason = "Builds a real network connection to Twitch, exercised manually against a live channel")
-  TwitchChatFacade twitchChatFacade(TwitchProperties properties) {
+  ITwitchChat twitchChat(TwitchProperties properties) {
     var credential = new OAuth2Credential("twitch", properties.getOauthToken(), null, null, properties.getBotUsername(), null, null);
-
     var chat = TwitchChatBuilder.builder().withChatAccount(credential).build();
     chat.joinChannel(properties.getChannel());
-
-    return new Twitch4jChatFacade(chat, properties.getChannel());
+    return chat;
   }
 }

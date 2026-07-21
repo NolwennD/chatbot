@@ -1,7 +1,7 @@
 package fr.craft.chatbot.command.infrastructure.primary;
 
 import fr.craft.chatbot.command.application.HandleChatMessageService;
-import fr.craft.chatbot.shared.twitch.infrastructure.ChatMessageReceivedEvent;
+import fr.craft.chatbot.shared.twitch.infrastructure.primary.ChatMessageReceivedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

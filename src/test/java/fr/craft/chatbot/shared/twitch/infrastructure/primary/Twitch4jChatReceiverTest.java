@@ -1,4 +1,4 @@
-package fr.craft.chatbot.shared.twitch.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure.primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class Twitch4jChatFacadeTest {
+class Twitch4jChatReceiverTest {
 
   @Mock
   private ITwitchChat twitchChat;
@@ -30,18 +30,11 @@ class Twitch4jChatFacadeTest {
   private EventManager eventManager;
 
   @Test
-  void shouldSendMessagesToTheConfiguredChannel() {
-    new Twitch4jChatFacade(twitchChat, "mychannel").sendMessage("Un chatbot Twitch");
-
-    verify(twitchChat).sendMessage("mychannel", "Un chatbot Twitch");
-  }
-
-  @Test
   void shouldMapIncomingChannelMessageEventsToChatMessages() {
     when(twitchChat.getEventManager()).thenReturn(eventManager);
 
     var received = new ArrayList<ChatMessage>();
-    new Twitch4jChatFacade(twitchChat, "mychannel").onChatMessage(received::add);
+    new Twitch4jChatReceiver(twitchChat).onChatMessage(received::add);
 
     var event = mock(ChannelMessageEvent.class);
     when(event.getMessage()).thenReturn("!projet");

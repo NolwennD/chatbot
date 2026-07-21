@@ -1,27 +1,24 @@
-package fr.craft.chatbot.shared.twitch.infrastructure;
+package fr.craft.chatbot.shared.twitch.infrastructure.primary;
 
 import com.github.twitch4j.chat.ITwitchChat;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
 import java.util.function.Consumer;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-class Twitch4jChatFacade implements TwitchChatFacade {
+@Component
+@Profile("!test")
+class Twitch4jChatReceiver implements TwitchChatReceiver {
 
   private final ITwitchChat twitchChat;
-  private final String channel;
 
-  Twitch4jChatFacade(ITwitchChat twitchChat, String channel) {
+  Twitch4jChatReceiver(ITwitchChat twitchChat) {
     this.twitchChat = twitchChat;
-    this.channel = channel;
   }
 
   @Override
   public void onChatMessage(Consumer<ChatMessage> listener) {
     twitchChat.getEventManager().onEvent(ChannelMessageEvent.class, event -> listener.accept(new ChatMessage(event.getMessage())));
-  }
-
-  @Override
-  public void sendMessage(String message) {
-    twitchChat.sendMessage(channel, message);
   }
 }

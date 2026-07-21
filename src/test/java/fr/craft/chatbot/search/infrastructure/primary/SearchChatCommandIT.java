@@ -7,7 +7,8 @@ import fr.craft.chatbot.search.domain.PageLookup;
 import fr.craft.chatbot.search.domain.PageSummary;
 import fr.craft.chatbot.search.domain.SearchQuery;
 import fr.craft.chatbot.shared.twitch.domain.ChatMessage;
-import fr.craft.chatbot.shared.twitch.infrastructure.TwitchChatFacade;
+import fr.craft.chatbot.shared.twitch.domain.ChatMessagePublisher;
+import fr.craft.chatbot.shared.twitch.infrastructure.primary.TwitchChatReceiver;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -34,7 +35,7 @@ class SearchChatCommandIT {
   private static final Path REPLY_FILE = Path.of("target/integration-test-output/search-chatbot-reply.txt");
 
   @Autowired
-  private RecordingTwitchChatFacade twitchChatFacade;
+  private FakeTwitchChatReceiver twitchChatReceiver;
 
   @BeforeEach
   @AfterEach
@@ -44,14 +45,14 @@ class SearchChatCommandIT {
 
   @Test
   void shouldNotWriteAnythingWhenTheMessageIsNotASearchCommand() {
-    twitchChatFacade.receiveMessage(new ChatMessage("wiki Idris"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("wiki Idris"));
 
     assertThat(REPLY_FILE).doesNotExist();
   }
 
   @Test
   void shouldWriteTheDisambiguationMessageWhenTheResultIsAmbiguous() {
-    twitchChatFacade.receiveMessage(new ChatMessage("?wp java"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("?wp java"));
 
     assertThat(REPLY_FILE).hasContent(
       """
@@ -61,7 +62,7 @@ class SearchChatCommandIT {
 
   @Test
   void shouldWriteTheExtractThenTheLinkWhenFoundDirectlyInTheBotLocale() {
-    twitchChatFacade.receiveMessage(new ChatMessage("?wiki coq de java"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("?wiki coq de java"));
 
     assertThat(REPLY_FILE).hasContent(
       """
@@ -72,7 +73,7 @@ class SearchChatCommandIT {
 
   @Test
   void shouldFallBackToEnglishAndWriteBothLinesWhenNotFoundInTheBotLocale() {
-    twitchChatFacade.receiveMessage(new ChatMessage("?wiki onboarding"));
+    twitchChatReceiver.receiveMessage(new ChatMessage("?wiki onboarding"));
 
     assertThat(REPLY_FILE).hasContent(
       """
@@ -81,7 +82,7 @@ class SearchChatCommandIT {
     );
   }
 
-  static class RecordingTwitchChatFacade implements TwitchChatFacade {
+  static class FakeTwitchChatReceiver implements TwitchChatReceiver {
 
     private final List<Consumer<ChatMessage>> listeners = new ArrayList<>();
 
@@ -93,9 +94,12 @@ class SearchChatCommandIT {
     public void onChatMessage(Consumer<ChatMessage> listener) {
       listeners.add(listener);
     }
+  }
+
+  static class RecordingChatMessagePublisher implements ChatMessagePublisher {
 
     @Override
-    public void sendMessage(String message) {
+    public void send(String message) {
       try {
         Files.createDirectories(REPLY_FILE.getParent());
         var line = Files.exists(REPLY_FILE) ? "\n" + message : message;
@@ -132,8 +136,14 @@ class SearchChatCommandIT {
 
     @Bean
     @Primary
-    RecordingTwitchChatFacade recordingTwitchChatFacade() {
-      return new RecordingTwitchChatFacade();
+    FakeTwitchChatReceiver fakeTwitchChatReceiver() {
+      return new FakeTwitchChatReceiver();
+    }
+
+    @Bean
+    @Primary
+    RecordingChatMessagePublisher recordingChatMessagePublisher() {
+      return new RecordingChatMessagePublisher();
     }
 
     @Bean
