@@ -11,8 +11,5 @@
     ":automergeRequireAllStatusChecks",
     ":label(area: dependencies)"
   ],
-  "prHourlyLimit": 20,
-  "docker-compose": {
-    "fileMatch": ["^src/main/docker/[^/]*\\.ya?ml$"]
-  }
+  "prHourlyLimit": 20
 }
