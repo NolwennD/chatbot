@@ -63,6 +63,18 @@ Write code test-first, following Kent Beck's process (_TDD By Example_; "Canon T
 
 This maps onto the architecture: start in the `domain` (a `record` + its `Assert` validation, or a port interface), drive the `application` service against fake/in-memory port implementations, then write the `secondary`/`primary` adapters last.
 
+### New features: outside-in, testing diamond over pyramid
+
+For a feature triggered by a primary adapter (a new chat command, a new endpoint), drive it **outside-in / double-loop** rather than bottom-up from isolated unit tests:
+
+- **Outer loop first**: write a sociable test that exercises the feature through real collaborators, RED on the simplest failing case, then a first passing case. Two valid places to put it — pick whichever fits, both count as the outer loop:
+  - a `*IT` acceptance test at the primary-adapter boundary, booting Spring (see `TwitchChatCommandIT`, `SearchChatCommandIT`);
+  - or a plain test at the `application` layer that wires the real `@Service` directly against its ports — no Spring context needed.
+    Either way, stub the true I/O boundaries (Wikipedia, Twitch, a DB) with **hand-written fakes on the domain port** (e.g. `FakePageLookup`), not Mockito mocks — a fake couples the test to the port's contract; a mock couples it to a specific call shape and breaks on refactors that don't change behaviour.
+- **Inner loop only as needed**: add unit tests below the IT only for what it structurally can't reach — pure domain logic (usually no mocks needed), or a branch the IT's fixed scenario can't exercise. Mockito is a last resort at this level, not the default.
+
+This produces a **diamond**, not a pyramid: most confidence from sociable tests exercising real collaborators end-to-end (only the true I/O boundary faked), a thin layer of unit tests underneath, few to no interaction-verifying mocks of internal wiring.
+
 ## Creating & refactoring Java code (jdtls)
 
 Create Java types and rename/refactor existing code through **jdtls** (the Eclipse JDT Language Server), not by writing or find-and-replacing text. jdtls works on the AST and project model, so package declarations, references, and imports stay correct across the whole codebase. Extraction/rename is the Refactor step of the TDD loop above.
