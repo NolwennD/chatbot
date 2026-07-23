@@ -28,7 +28,7 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - run: ./mvnw verify
+      - run: ./mvnw clean verify
 
       - name: Verify container image builds (setup-env.sh --container)
         run: docker build -t chatbot .
