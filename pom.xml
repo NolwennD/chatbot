@@ -138,7 +138,7 @@
     <cucumber.version>7.34.4</cucumber.version>
     <modernizer-maven-plugin.version>3.4.0</modernizer-maven-plugin.version>
     <error-prone.version>2.50.0</error-prone.version>
-    <nullaway.version>0.13.7</nullaway.version>
+    <nullaway.version>0.13.8</nullaway.version>
   </properties>
 
   <build>
