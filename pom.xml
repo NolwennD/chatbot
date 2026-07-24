@@ -136,7 +136,7 @@
     <thymeleaf-layout-dialect.version>4.0.1</thymeleaf-layout-dialect.version>
     <reflections.version>0.10.2</reflections.version>
     <cucumber.version>7.34.5</cucumber.version>
-    <modernizer-maven-plugin.version>3.4.0</modernizer-maven-plugin.version>
+    <modernizer-maven-plugin.version>3.5.0</modernizer-maven-plugin.version>
     <error-prone.version>2.50.0</error-prone.version>
     <nullaway.version>0.13.8</nullaway.version>
   </properties>
