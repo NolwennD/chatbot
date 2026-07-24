@@ -129,7 +129,7 @@
     <surefire-plugin.version>3.5.6</surefire-plugin.version>
     <failsafe-plugin.version>3.5.6</failsafe-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-    <checkstyle.version>10.21.0</checkstyle.version>
+    <checkstyle.version>10.26.1</checkstyle.version>
     <jacoco.version>0.8.15</jacoco.version>
     <spring-boot.version>4.1.0</spring-boot.version>
     <archunit-junit5.version>1.4.2</archunit-junit5.version>
