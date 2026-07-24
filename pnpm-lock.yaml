@@ -24,8 +24,8 @@ importers:
         specifier: 4.0.0
         version: 4.0.0
       prettier-plugin-java:
-        specifier: 2.8.1
-        version: 2.8.1(prettier@3.9.5)
+        specifier: 2.10.3
+        version: 2.10.3(prettier@3.9.5)
       prettier-plugin-organize-imports:
         specifier: 4.3.0
         version: 4.3.0(prettier@3.9.5)(typescript@7.0.2)
@@ -34,21 +34,6 @@ importers:
         version: 3.0.2(prettier@3.9.5)
 
 packages:
-
-  '@chevrotain/cst-dts-gen@11.0.3':
-    resolution: {integrity: sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ==}
-
-  '@chevrotain/gast@11.0.3':
-    resolution: {integrity: sha512-+qNfcoNk70PyS/uxmj3li5NiECO+2YKZZQMbmjTqRI3Qchu8Hig/Q9vgkHpI3alNjr7M+a2St5pw5w5F6NL5/Q==}
-
-  '@chevrotain/regexp-to-ast@11.0.3':
-    resolution: {integrity: sha512-1fMHaBZxLFvWI067AVbGJav1eRY7N8DDvYCTwGBiE/ytKBgP8azTdgyrKyWZ9Mfh09eHWb5PgTSO8wi7U824RA==}
-
-  '@chevrotain/types@11.0.3':
-    resolution: {integrity: sha512-gsiM3G8b58kZC2HaWR50gu6Y1440cHiJ+i3JUvcp/35JchYejb2+5MVeJK0iKThYpAa/P2PYFV4hoi44HD+aHQ==}
-
-  '@chevrotain/utils@11.0.3':
-    resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
 
   '@cucumber/gherkin@39.1.0':
     resolution: {integrity: sha512-pqmSO2bUWxJm3TbNrKXlDaHjL6c77+ez9kWmfCd9oRPeTRPEVH3spZvpAqdXYWOZYSNYwWFCAAeZ4RGpkauNoQ==}
@@ -184,14 +169,6 @@ packages:
   '@xml-tools/parser@1.0.11':
     resolution: {integrity: sha512-aKqQ077XnR+oQtHJlrAflaZaL7qZsulWc/i/ZEooar5JiWj1eLt0+Wg28cpa+XLney107wXqneC+oG1IZvxkTA==}
 
-  chevrotain-allstar@0.3.1:
-    resolution: {integrity: sha512-b7g+y9A0v4mxCW1qUhf3BSVPg+/NvGErk/dOkrDaHA0nQIQGAtrOjlX//9OQtRlSCy+x9rfB5N8yC71lH1nvMw==}
-    peerDependencies:
-      chevrotain: ^11.0.0
-
-  chevrotain@11.0.3:
-    resolution: {integrity: sha512-ci2iJH6LeIkvP9eJW6gpueU8cnZhv85ELY8w8WiFtNjMHA5ad6pQLaJo9mEly/9qUyCpvqX8/POVUTf18/HFdw==}
-
   chevrotain@7.1.1:
     resolution: {integrity: sha512-wy3mC1x4ye+O+QkEinVJkPf5u2vsrDIYW9G7ZuwFl6v/Yu0LwUuT2POsb+NUWApebyxfkQq6+yDfRExbnI5rcw==}
 
@@ -227,22 +204,10 @@ packages:
     resolution: {integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==}
     engines: {node: '>=12'}
 
-  java-parser@3.0.1:
-    resolution: {integrity: sha512-sDIR7u9b7O2JViNUxiZRhnRz7URII/eE7g2B+BmGxDeS6Ex3OYAcCyz5oh0H4LQ+hL/BS8OJTz8apMy9xtGmrQ==}
-
   lint-staged@17.1.0:
     resolution: {integrity: sha512-d7UQRu/9ZPgfu4+hu/k0wny5GEaIxo+2jb2LJqQDkE7cHRTm1HGqNUDq5UOwsGPpjpaNAFmgAsYo3TR+i9cSJw==}
     engines: {node: '>=22.22.1'}
     hasBin: true
-
-  lodash-es@4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-
-  lodash-es@4.18.1:
-    resolution: {integrity: sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==}
-
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   picomatch@4.0.5:
     resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
@@ -251,8 +216,8 @@ packages:
   prettier-plugin-gherkin@4.0.0:
     resolution: {integrity: sha512-EBDwV1Ou9rG+seoh7jcwZ6sXXyHwsbUks5TeSyrlrLaTdz+/qYvnHuwY8rk7mb6/+M1ZGuY4/SiVc68ybwvJOA==}
 
-  prettier-plugin-java@2.8.1:
-    resolution: {integrity: sha512-tkteH5OSCEb0E7wKnhhUSitr1pGUCUt9M//CwerSNhoalL/qv0jXTeSVBPZ36KC+kZl3nbq4dxh144NuGchACg==}
+  prettier-plugin-java@2.10.3:
+    resolution: {integrity: sha512-/g52mTbsN2ee8JjLRpBWGGmcmRhdv2zRWyj4QbsL9CQ+nKR022GRJhebwEpRyaCc8hLV6aO3JPGNQyXp1DPrCA==}
     peerDependencies:
       prettier: ^3.0.0
 
@@ -315,29 +280,15 @@ packages:
     engines: {node: '>=16.20.0'}
     hasBin: true
 
+  web-tree-sitter@0.26.11:
+    resolution: {integrity: sha512-Q5Dm3YTIXSXuH6FxX6RuzX2Qwpc4DPGiYMU87Wg5Z8OIStiQFiUex4zMDc0vBTw78EphaYJacncJghCHzbZptg==}
+
   yaml@2.9.0:
     resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
 snapshots:
-
-  '@chevrotain/cst-dts-gen@11.0.3':
-    dependencies:
-      '@chevrotain/gast': 11.0.3
-      '@chevrotain/types': 11.0.3
-      lodash-es: 4.17.21
-
-  '@chevrotain/gast@11.0.3':
-    dependencies:
-      '@chevrotain/types': 11.0.3
-      lodash-es: 4.17.21
-
-  '@chevrotain/regexp-to-ast@11.0.3': {}
-
-  '@chevrotain/types@11.0.3': {}
-
-  '@chevrotain/utils@11.0.3': {}
 
   '@cucumber/gherkin@39.1.0':
     dependencies:
@@ -417,20 +368,6 @@ snapshots:
     dependencies:
       chevrotain: 7.1.1
 
-  chevrotain-allstar@0.3.1(chevrotain@11.0.3):
-    dependencies:
-      chevrotain: 11.0.3
-      lodash-es: 4.18.1
-
-  chevrotain@11.0.3:
-    dependencies:
-      '@chevrotain/cst-dts-gen': 11.0.3
-      '@chevrotain/gast': 11.0.3
-      '@chevrotain/regexp-to-ast': 11.0.3
-      '@chevrotain/types': 11.0.3
-      '@chevrotain/utils': 11.0.3
-      lodash-es: 4.17.21
-
   chevrotain@7.1.1:
     dependencies:
       regexp-to-ast: 0.5.0
@@ -451,12 +388,6 @@ snapshots:
 
   is-plain-obj@4.1.0: {}
 
-  java-parser@3.0.1:
-    dependencies:
-      chevrotain: 11.0.3
-      chevrotain-allstar: 0.3.1(chevrotain@11.0.3)
-      lodash: 4.17.21
-
   lint-staged@17.1.0:
     dependencies:
       picomatch: 4.0.5
@@ -464,12 +395,6 @@ snapshots:
       tinyexec: 1.2.4
     optionalDependencies:
       yaml: 2.9.0
-
-  lodash-es@4.17.21: {}
-
-  lodash-es@4.18.1: {}
-
-  lodash@4.17.21: {}
 
   picomatch@4.0.5: {}
 
@@ -479,10 +404,10 @@ snapshots:
       '@cucumber/messages': 32.3.1
       prettier: 3.9.5
 
-  prettier-plugin-java@2.8.1(prettier@3.9.5):
+  prettier-plugin-java@2.10.3(prettier@3.9.5):
     dependencies:
-      java-parser: 3.0.1
       prettier: 3.9.5
+      web-tree-sitter: 0.26.11
 
   prettier-plugin-organize-imports@4.3.0(prettier@3.9.5)(typescript@7.0.2):
     dependencies:
@@ -546,6 +471,8 @@ snapshots:
       '@typescript/typescript-sunos-x64': 7.0.2
       '@typescript/typescript-win32-arm64': 7.0.2
       '@typescript/typescript-win32-x64': 7.0.2
+
+  web-tree-sitter@0.26.11: {}
 
   yaml@2.9.0:
     optional: true
