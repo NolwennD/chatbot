@@ -35,7 +35,8 @@ public class CucumberRestClient {
   }
 
   public void setupRestClient() {
-    this.restClient = this.restClient.mutate()
+    this.restClient = this.restClient
+      .mutate()
       .requestInterceptors(interceptors -> interceptors.add(saveLastResultInterceptor()))
       .build();
   }
