@@ -25,16 +25,14 @@ class RestWikipediaPageLookupTest {
 
   @Test
   void shouldReturnASummaryWhenThePageExists() {
-    server
-      .expect(requestTo("https://fr.wikipedia.org/api/rest_v1/page/summary/java"))
-      .andRespond(
-        withSuccess(
-          """
-          {"type":"standard","extract":"Un langage de programmation.","content_urls":{"desktop":{"page":"https://fr.wikipedia.org/wiki/Java_(langage)"}}}
-          """,
-          MediaType.APPLICATION_JSON
-        )
-      );
+    server.expect(requestTo("https://fr.wikipedia.org/api/rest_v1/page/summary/java")).andRespond(
+      withSuccess(
+        """
+        {"type":"standard","extract":"Un langage de programmation.","content_urls":{"desktop":{"page":"https://fr.wikipedia.org/wiki/Java_(langage)"}}}
+        """,
+        MediaType.APPLICATION_JSON
+      )
+    );
 
     var summary = pageLookup.findSummary(new SearchQuery("java"), Locale.FRENCH);
 
@@ -43,16 +41,14 @@ class RestWikipediaPageLookupTest {
 
   @Test
   void shouldFlagDisambiguationPages() {
-    server
-      .expect(requestTo("https://fr.wikipedia.org/api/rest_v1/page/summary/java"))
-      .andRespond(
-        withSuccess(
-          """
-          {"type":"disambiguation","extract":"","content_urls":{"desktop":{"page":"https://fr.wikipedia.org/wiki/Java"}}}
-          """,
-          MediaType.APPLICATION_JSON
-        )
-      );
+    server.expect(requestTo("https://fr.wikipedia.org/api/rest_v1/page/summary/java")).andRespond(
+      withSuccess(
+        """
+        {"type":"disambiguation","extract":"","content_urls":{"desktop":{"page":"https://fr.wikipedia.org/wiki/Java"}}}
+        """,
+        MediaType.APPLICATION_JSON
+      )
+    );
 
     var summary = pageLookup.findSummary(new SearchQuery("java"), Locale.FRENCH);
 
@@ -75,16 +71,14 @@ class RestWikipediaPageLookupTest {
 
   @Test
   void shouldEncodeMultiWordQueries() {
-    server
-      .expect(requestTo("https://fr.wikipedia.org/api/rest_v1/page/summary/coq%20de%20java"))
-      .andRespond(
-        withSuccess(
-          """
-          {"type":"standard","extract":"Une race de poule.","content_urls":{"desktop":{"page":"https://fr.wikipedia.org/wiki/Coq_de_Java"}}}
-          """,
-          MediaType.APPLICATION_JSON
-        )
-      );
+    server.expect(requestTo("https://fr.wikipedia.org/api/rest_v1/page/summary/coq%20de%20java")).andRespond(
+      withSuccess(
+        """
+        {"type":"standard","extract":"Une race de poule.","content_urls":{"desktop":{"page":"https://fr.wikipedia.org/wiki/Coq_de_Java"}}}
+        """,
+        MediaType.APPLICATION_JSON
+      )
+    );
 
     var summary = pageLookup.findSummary(new SearchQuery("coq de java"), Locale.FRENCH);
 
