@@ -8,8 +8,9 @@
     ":disableDependencyDashboard",
     ":automergeMinor",
     ":automergePr",
-    ":automergeRequireAllStatusChecks",
     ":label(area: dependencies)"
   ],
-  "prHourlyLimit": 20
+  "prHourlyLimit": 20,
+  "automergeType": "pr",
+  "automergeStrategy": "squa"
 }
