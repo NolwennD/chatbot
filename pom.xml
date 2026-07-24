@@ -124,7 +124,7 @@
     <twitch4j.version>1.26.0</twitch4j.version>
 
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-    <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
+    <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
     <compiler-plugin.version>3.15.0</compiler-plugin.version>
     <surefire-plugin.version>3.5.6</surefire-plugin.version>
     <failsafe-plugin.version>3.5.6</failsafe-plugin.version>
