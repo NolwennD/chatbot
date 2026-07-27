@@ -83,7 +83,12 @@ class SearchQueryTest {
     return Arbitraries.strings()
       .ofMinLength(1)
       .ofMaxLength(30)
-      .filter(term -> term.charAt(0) > ' ' && term.charAt(term.length() - 1) > ' ');
+      .filter(term -> isVisibleBoundary(term.charAt(0)) && isVisibleBoundary(term.charAt(term.length() - 1)));
+  }
+
+  // A boundary that survives String.trim (> U+0020) and is not any kind of Unicode space, so the term is never blank.
+  private static boolean isVisibleBoundary(char c) {
+    return c > ' ' && !Character.isWhitespace(c) && !Character.isSpaceChar(c);
   }
 
   @Provide
