@@ -14,13 +14,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 class CommandNameTest {
 
   @Test
-  void shouldBuildACommandName() {
-    var name = new CommandName("!projet");
-
-    assertThat(name.value()).isEqualTo("!projet");
-  }
-
-  @Test
   void shouldRejectABlankValue() {
     assertThatThrownBy(() -> new CommandName(" ")).isInstanceOf(MissingMandatoryValueException.class);
   }

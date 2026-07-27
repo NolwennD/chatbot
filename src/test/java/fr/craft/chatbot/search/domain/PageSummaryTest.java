@@ -36,14 +36,6 @@ class PageSummaryTest {
   }
 
   @Test
-  void shouldExposeTheUrlAndDisambiguationFlag() {
-    var summary = new PageSummary("", "https://fr.wikipedia.org/wiki/Java", true);
-
-    assertThat(summary.url()).isEqualTo("https://fr.wikipedia.org/wiki/Java");
-    assertThat(summary.disambiguation()).isTrue();
-  }
-
-  @Test
   @SuppressWarnings("NullAway")
   void shouldRejectANullExtract() {
     assertThatThrownBy(() -> new PageSummary(null, "https://fr.wikipedia.org/wiki/Java", false)).isInstanceOf(

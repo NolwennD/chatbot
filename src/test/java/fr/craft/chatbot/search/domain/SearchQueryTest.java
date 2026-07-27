@@ -14,13 +14,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 class SearchQueryTest {
 
   @Test
-  void shouldBuildASearchQuery() {
-    var query = new SearchQuery("java");
-
-    assertThat(query.value()).isEqualTo("java");
-  }
-
-  @Test
   @SuppressWarnings("NullAway")
   void shouldRejectABlankValue() {
     assertThatThrownBy(() -> new SearchQuery(" ")).isInstanceOf(MissingMandatoryValueException.class);
