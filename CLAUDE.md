@@ -115,3 +115,7 @@ Tag every test with a category annotation (drives `@DisplayNameGeneration` and S
 [.github/workflows/ci.yml](.github/workflows/ci.yml) runs `pnpm prettier:check` and `./mvnw verify` on every PR and on push to `main`. [renovate.json](renovate.json) (extends `config:recommended`) keeps dependencies current automatically, including this workflow's own pinned action versions — its `github-actions` manager is enabled by default.
 
 When pinning a new GitHub Action version (`uses: owner/repo@vN`) or any other fast-moving external tool, verify the actual current major on its real releases page (e.g. via web search/fetch) instead of guessing from memory — these move faster than a model's training data tracks, and getting it wrong at authoring time is exactly the kind of drift Renovate can't fix retroactively before the first PR merges.
+
+## Reporting command outcomes
+
+State command and build results in precise, literal terms — "it errors / exits 1 / fails / succeeds" — and back them with the concrete signal (exit code, `BUILD SUCCESS`/`BUILD FAILURE`, "0 failures"). Avoid vague or colloquial framing like "it grumbles" (fr. _ça râle_): it hides whether the result was a mere warning or a real failure.

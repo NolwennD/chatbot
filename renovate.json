@@ -12,5 +12,12 @@
   ],
   "prHourlyLimit": 20,
   "automergeType": "pr",
-  "automergeStrategy": "squa"
+  "automergeStrategy": "squa",
+  "packageRules": [
+    {
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["net.jqwik:jqwik"],
+      "enabled": false
+    }
+  ]
 }

@@ -5,10 +5,37 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fr.craft.chatbot.UnitTest;
 import fr.craft.chatbot.shared.error.domain.MissingMandatoryValueException;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
+import net.jqwik.api.constraints.StringLength;
 import org.junit.jupiter.api.Test;
 
 @UnitTest
 class PageSummaryTest {
+
+  private static final int MAX_EXTRACT_LENGTH = 200;
+  private static final String URL = "https://fr.wikipedia.org/wiki/Test";
+
+  @Property
+  void shouldKeepAnyExtractAtOrUnderTheLimitUnchanged(@ForAll @StringLength(max = MAX_EXTRACT_LENGTH) String extract) {
+    assertThat(new PageSummary(extract, URL, false).extract()).isEqualTo(extract);
+  }
+
+  @Property
+  void shouldNeverExceedTheLimitPlusTheEllipsis(@ForAll String extract) {
+    assertThat(new PageSummary(extract, URL, false).extract().length()).isLessThanOrEqualTo(MAX_EXTRACT_LENGTH + 1);
+  }
+
+  @Property
+  void shouldEndWithAnEllipsisOverAPrefixOfTheInputWhenTooLong(
+    @ForAll @StringLength(min = MAX_EXTRACT_LENGTH + 1, max = 400) String extract
+  ) {
+    var result = new PageSummary(extract, URL, false).extract();
+    var body = result.substring(0, result.length() - 1);
+
+    assertThat(result).endsWith("…");
+    assertThat(extract).startsWith(body);
+  }
 
   @Test
   void shouldKeepAShortExtractUnchanged() {

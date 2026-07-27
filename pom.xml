@@ -112,6 +112,12 @@
       <artifactId>junit-platform-suite</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>net.jqwik</groupId>
+      <artifactId>jqwik</artifactId>
+      <version>${jqwik.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <properties>
@@ -133,6 +139,7 @@
     <jacoco.version>0.8.15</jacoco.version>
     <spring-boot.version>4.1.0</spring-boot.version>
     <archunit-junit5.version>1.4.2</archunit-junit5.version>
+    <jqwik.version>1.9.3</jqwik.version>
     <thymeleaf-layout-dialect.version>4.0.1</thymeleaf-layout-dialect.version>
     <reflections.version>0.10.2</reflections.version>
     <cucumber.version>7.34.6</cucumber.version>
