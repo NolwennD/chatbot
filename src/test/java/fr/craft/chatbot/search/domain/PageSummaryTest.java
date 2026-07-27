@@ -63,6 +63,15 @@ class PageSummaryTest {
   }
 
   @Test
+  void shouldKeepTheWholeCutWhenTheOnlySpaceIsTheLeadingCharacter() {
+    var extract = " " + "a".repeat(250);
+
+    var summary = new PageSummary(extract, "https://fr.wikipedia.org/wiki/Test", false);
+
+    assertThat(summary.extract()).isEqualTo(" " + "a".repeat(MAX_EXTRACT_LENGTH - 1) + "…");
+  }
+
+  @Test
   @SuppressWarnings("NullAway")
   void shouldRejectANullExtract() {
     assertThatThrownBy(() -> new PageSummary(null, "https://fr.wikipedia.org/wiki/Java", false)).isInstanceOf(
