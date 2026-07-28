@@ -23,7 +23,6 @@ import org.springframework.stereotype.Controller;
 class HexagonalArchTest {
 
   private static final String ROOT_PACKAGE = "fr.craft.chatbot";
-  private static final String SHARED_PACKAGES = ROOT_PACKAGE.concat(".shared..");
   private static final String WIRE_PACKAGES = ROOT_PACKAGE.concat(".wire..");
 
   private static final JavaClasses classes = new ClassFileImporter()
@@ -53,8 +52,8 @@ class HexagonalArchTest {
   }
 
   private static Collection<String> packagesWithAnnotation(Class<? extends Annotation> annotationClass) throws AssertionError {
-    try {
-      return Files.walk(rootPackagePath())
+    try (Stream<Path> files = Files.walk(rootPackagePath())) {
+      return files
         .filter(path -> path.toString().endsWith("package-info.java"))
         .map(toPackageName())
         .map(path -> path.replaceAll("[\\/]", "."))
