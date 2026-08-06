@@ -140,7 +140,7 @@
     <spring-boot.version>4.1.0</spring-boot.version>
     <archunit-junit5.version>1.4.2</archunit-junit5.version>
     <jqwik.version>1.9.3</jqwik.version>
-    <pitest-maven.version>1.25.8</pitest-maven.version>
+    <pitest-maven.version>1.25.9</pitest-maven.version>
     <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
     <thymeleaf-layout-dialect.version>4.0.1</thymeleaf-layout-dialect.version>
     <reflections.version>0.10.2</reflections.version>
