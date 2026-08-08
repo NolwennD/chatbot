@@ -138,7 +138,7 @@
     <checkstyle.version>13.9.0</checkstyle.version>
     <jacoco.version>0.8.15</jacoco.version>
     <spring-boot.version>4.1.0</spring-boot.version>
-    <archunit-junit5.version>1.4.2</archunit-junit5.version>
+    <archunit-junit5.version>1.5.0</archunit-junit5.version>
     <jqwik.version>1.9.3</jqwik.version>
     <pitest-maven.version>1.25.9</pitest-maven.version>
     <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
